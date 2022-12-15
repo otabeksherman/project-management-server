@@ -7,4 +7,13 @@ public class ItemInBoard {
     Status status;
     Item item;
     Long boardId;
+
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }
