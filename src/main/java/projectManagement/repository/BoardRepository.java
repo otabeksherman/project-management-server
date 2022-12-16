@@ -1,4 +1,6 @@
 package projectManagement.repository;
 
-public class BoardRepository {
+
+public interface BoardRepository{
+
 }

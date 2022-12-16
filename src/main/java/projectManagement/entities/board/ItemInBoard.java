@@ -4,7 +4,16 @@ import projectManagement.entities.Status;
 import projectManagement.entities.item.Item;
 
 public class ItemInBoard {
-    Status status;
-    Item item;
-    Long boardId;
+    private Status status;
+    private Item item;
+    private Long boardId;
+
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }

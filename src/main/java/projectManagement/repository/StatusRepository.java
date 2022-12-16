@@ -1,4 +1,4 @@
 package projectManagement.repository;
 
-public class StatusRepository {
+public interface StatusRepository {
 }

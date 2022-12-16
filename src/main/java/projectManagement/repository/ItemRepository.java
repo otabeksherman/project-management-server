@@ -1,4 +1,5 @@
 package projectManagement.repository;
 
-public class ItemRepository {
+
+public interface ItemRepository {
 }
