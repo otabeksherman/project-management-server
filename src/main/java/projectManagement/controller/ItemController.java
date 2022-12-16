@@ -9,10 +9,8 @@ import projectManagement.entities.Status;
 import projectManagement.entities.item.Item;
 import projectManagement.service.ItemService;
 
-@RestController
-@RequestMapping("/item")
+
 public class ItemController {
-    @Autowired
     ItemService itemService;
 
     public ItemController() {

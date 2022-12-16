@@ -9,9 +9,8 @@ import projectManagement.entities.board.Board;
 import projectManagement.repository.ItemRepository;
 import projectManagement.repository.StatusRepository;
 
-@Service
 public class StatusService {
-    @Autowired
+
     private final StatusRepository statusRepository;
 
     private static final Logger logger = LogManager.getLogger(StatusService.class.getName());

@@ -1,27 +1,16 @@
 package projectManagement.entities.user;
 
-import org.springframework.data.annotation.Id;
 import projectManagement.entities.board.Board;
 
-import javax.persistence.*;
 
-@Entity
-@Table(name = "authorized_users")
 public class Authorization {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "board_id", referencedColumnName = "id")
     private Board board;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @Enumerated
-    @Column(name = "permission")
+
     private UserRole permission;
 
     public Authorization() {
@@ -37,7 +26,7 @@ public class Authorization {
         return id;
     }
 
-    public Board getboard() {
+    public Board getBoard() {
         return board;
     }
 

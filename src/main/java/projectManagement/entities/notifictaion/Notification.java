@@ -3,12 +3,12 @@ package projectManagement.entities.notifictaion;
 import java.time.LocalDate;
 
 public class Notification {
-    Long id;
-    Long userId;
-    Long assignerId;
-    Long boardId;
-    LocalDate date;
-    NotificationType notificationType;
+    private Long id;
+    private Long userId;
+    private Long assignerId;
+    private Long boardId;
+    private LocalDate date;
+    private NotificationType notificationType;
     //T data;
 
 

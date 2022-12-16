@@ -9,9 +9,7 @@ import projectManagement.entities.user.User;
 import projectManagement.entities.user.UserRole;
 import projectManagement.repository.BoardRepository;
 
-@Service
 public class BoardService {
-    @Autowired
     private final BoardRepository boardRepository;
 
     private static final Logger logger = LogManager.getLogger(BoardService.class.getName());

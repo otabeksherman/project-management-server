@@ -8,11 +8,11 @@ import java.util.Map;
 public class UserInBoard {
     private static final Logger logger = LogManager.getLogger(UserInBoard.class.getName());
 
-    Map<Long, UserRole> userMap;
-    Long boardId;
-    Long creatorId;
+    private Map<Long, UserRole> userMap;
+    private Long boardId;
+    private Long creatorId;
 
-    void changeRoles(Long creatorId, Long userId,UserRole role){
+   public void changeRoles(Long creatorId, Long userId,UserRole role){
         if(creatorId== this.creatorId){
             userMap.put(userId,role);
         }

@@ -8,9 +8,8 @@ import projectManagement.entities.Status;
 import projectManagement.entities.item.Item;
 import projectManagement.repository.ItemRepository;
 
-@Service
 public class ItemService {
-    @Autowired
+
     private final ItemRepository itemRepository;
 
     private static final Logger logger = LogManager.getLogger(ItemService.class.getName());

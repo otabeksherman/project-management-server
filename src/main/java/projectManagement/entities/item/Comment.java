@@ -3,10 +3,10 @@ package projectManagement.entities.item;
 import java.time.LocalDate;
 
 public class Comment {
-    Long id;
-    Long userId;
-    String content;
-    LocalDate date;
+    private Long id;
+    private Long userId;
+    private String content;
+    private LocalDate date;
 
     public Comment(Long userId, String content) {
         this.userId = userId;

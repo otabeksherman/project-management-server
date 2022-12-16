@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User {
-    Long id;
-    String email;
-    String password;
-    List<Board> boards;
-    List<Notification> notifications;
-    Boolean emailNotify;
+    private Long id;
+    private String email;
+    private String password;
+    private List<Board> boards;
+    private List<Notification> notifications;
+    private Boolean emailNotify;
     private boolean enabled;
 
 
