@@ -33,6 +33,4 @@ public class Comment {
         this.content = content;
         this.date = LocalDate.now();
     }
-
-
 }
