@@ -29,20 +29,12 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Notification> notifications;
     private Boolean emailNotify;
-    private boolean enabled;
-
 
     public User(String email, String password) {
         this.email = email;
         this.password = password;
         this.emailNotify = true; //default is true
-        this.boards= new HashSet<>();
-        this.notifications=new HashSet<>();
-        this.enabled = false;
+        this.boards = new HashSet<>();
+        this.notifications = new HashSet<>();
     }
-
-
-
-
-
 }
