@@ -3,15 +3,18 @@ package projectManagement.controller;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import projectManagement.dto.BaseResponse;
 import projectManagement.util.JwtUtils;
 import projectManagement.dto.AuthenticationRequest;
 import projectManagement.service.UserService;
@@ -28,15 +31,16 @@ public class AuthenticationController {
     private final UserService userDetailsService;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-        final UserDetails user = userDetailsService.loadUserByUsername(request.getEmail());
-        if (user != null) {
-            return ResponseEntity.ok(jwtUtils.generateToken(user));
+    public ResponseEntity<BaseResponse> authenticate(@RequestBody AuthenticationRequest request) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new BaseResponse<>("Bad credentials", request));
         }
-        return ResponseEntity.status(400).body("Error has occurred");
+        final UserDetails user = userDetailsService.loadUserByUsername(request.getEmail());
+        return ResponseEntity.ok(new BaseResponse<>("Success", jwtUtils.generateToken(user)));
     }
 }
 
