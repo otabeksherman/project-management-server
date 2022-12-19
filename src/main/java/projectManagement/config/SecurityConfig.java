@@ -30,6 +30,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/").permitAll()
                 .antMatchers("/**/auth/**").permitAll()
+                .antMatchers("/**/registrationToGit/**").permitAll()
                 .antMatchers("/**/registration/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

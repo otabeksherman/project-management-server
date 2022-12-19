@@ -6,10 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import projectManagement.dto.RegistrationDto;
 import projectManagement.service.UserService;
@@ -34,4 +31,13 @@ public class UserController {
                     HttpStatus.BAD_REQUEST, "Email already exists", e);
         }
     }
+
+
+    @GetMapping("/registrationToGit")
+    public ResponseEntity<String> registerToGit(@RequestParam String code) {
+        logger.info("in authenticateToGit(): ");
+        return new ResponseEntity<>(userService.registerWithGit(code), HttpStatus.CREATED);
+    }
+
+
 }

@@ -21,8 +21,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    private boolean isGeneralAccount;
+    @Column(unique = true, nullable = false)
     private String email;
+    @Column(nullable = false)
     private String password;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Board> boards;
@@ -31,8 +33,17 @@ public class User {
     private Boolean emailNotify;
 
     public User(String email, String password) {
+        this.isGeneralAccount=true;
         this.email = email;
         this.password = password;
+        this.emailNotify = true; //default is true
+        this.boards = new HashSet<>();
+        this.notifications = new HashSet<>();
+    }
+    public User(String email) {
+        this.isGeneralAccount=false;
+        this.email = email;
+        this.password = email;
         this.emailNotify = true; //default is true
         this.boards = new HashSet<>();
         this.notifications = new HashSet<>();
