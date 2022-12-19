@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
+import projectManagement.dto.BaseResponse;
 import projectManagement.dto.RegistrationDto;
 import projectManagement.service.UserService;
 
@@ -26,12 +27,14 @@ public class UserController {
     private static Logger logger = LogManager.getLogger(UserController.class);
 
     @PostMapping("/registration")
-    public ResponseEntity<String> register(@RequestBody RegistrationDto dto) {
+    public ResponseEntity<BaseResponse> register(@RequestBody RegistrationDto dto) {
         try {
-            return new ResponseEntity<>(userService.register(dto).getEmail(), HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new BaseResponse<>("Account created successfully",
+                            userService.register(dto).getEmail()));
         } catch (SQLDataException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Email already exists", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new BaseResponse<>("Email already exists", dto.getEmail()));
         }
     }
 }
