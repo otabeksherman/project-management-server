@@ -35,12 +35,4 @@ public class UserController {
         }
     }
 
-
-    @GetMapping("/registrationToGit")
-    public ResponseEntity<String> registerToGit(@RequestParam String code) {
-        logger.info("in authenticateToGit(): ");
-        return new ResponseEntity<>(userService.registerWithGit(code), HttpStatus.CREATED);
-    }
-
-
 }

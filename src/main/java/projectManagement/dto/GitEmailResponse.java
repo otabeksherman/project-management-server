@@ -1,4 +1,4 @@
-package projectManagement.controller.response;
+package projectManagement.dto;
 
 public class GitEmailResponse {
     private String email;

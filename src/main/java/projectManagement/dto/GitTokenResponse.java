@@ -1,4 +1,4 @@
-package projectManagement.controller.response;
+package projectManagement.dto;
 
 public class GitTokenResponse {
     private String access_token;

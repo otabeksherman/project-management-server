@@ -6,18 +6,27 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import projectManagement.controller.response.GitTokenResponse;
-import projectManagement.controller.response.GitEmailResponse;
+import projectManagement.dto.GitTokenResponse;
+import projectManagement.dto.GitEmailResponse;
 
 public class GitAuthUtil {
     private static Logger logger = LogManager.getLogger(GitAuthUtil.class);
 
-    public static String getGitToken(String code, String git_client_id, String git_client_secret) {
+    public static String getEmailFromGit(String code, String gitClientId, String gitClientSecret) {
+        String token = GitAuthUtil.getGitTokenFromCode(code, gitClientId, gitClientSecret);
+        logger.debug("git token:" + token);
+        String email = GitAuthUtil.getGitEmailFromToken(token);
+        logger.debug("git email:" + email);
+        return email;
+    }
+
+    public static String getGitTokenFromCode(String code, String gitClientId, String gitClientSecret) throws RestClientException {
         String url = "https://github.com/login/oauth/access_token?";
-        String token=null;
+        String token = null;
         // add params to request
-        String url_params = url + "client_id=" + git_client_id + "&client_secret=" + git_client_secret + "&code=" + code;
+        String url_params = url + "client_id=" + gitClientId + "&client_secret=" + gitClientSecret + "&code=" + code;
 
         ResponseEntity<GitTokenResponse> response = null;
         RestTemplate restTemplate = new RestTemplate();
@@ -28,16 +37,16 @@ public class GitAuthUtil {
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
         try {
             response = restTemplate.exchange(url_params, HttpMethod.POST, entity, GitTokenResponse.class);
-            token=response.getBody().getAccess_token();
-        } catch (Exception e) {
-            logger.error("error: git- http post get token from code");
+            token = response.getBody().getAccess_token();
+        } catch (RestClientException e) {
+            throw new RestClientException("error: git- http post get token from code");
         }
         return token;
     }
 
-    public static String getGitEmailFromToken(String token){
+    public static String getGitEmailFromToken(String token) throws RestClientException {
         String url = "https://api.github.com/user/emails";
-        String email=null;
+        String email = null;
         ResponseEntity<GitEmailResponse[]> response = null;
         RestTemplate restTemplate = new RestTemplate();
 
@@ -47,9 +56,9 @@ public class GitAuthUtil {
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
         try {
             response = restTemplate.exchange(url, HttpMethod.GET, entity, GitEmailResponse[].class);
-            email=response.getBody()[0].getEmail();
-        } catch (Exception e) {
-            logger.error("error: git- http post get email from token");
+            email = response.getBody()[0].getEmail();
+        } catch (RestClientException e) {
+            throw new RestClientException("error: git- http post get email from token");
         }
         return email;
     }
