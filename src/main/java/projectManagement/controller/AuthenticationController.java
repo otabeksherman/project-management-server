@@ -18,6 +18,11 @@ import projectManagement.util.JwtUtils;
 import projectManagement.dto.AuthenticationRequest;
 import projectManagement.service.UserService;
 
+import javax.swing.text.html.HTML;
+
+import java.net.URI;
+
+import static projectManagement.util.GitAuthUtil.getAuthLinkFromGit;
 import static projectManagement.util.GitAuthUtil.getEmailFromGit;
 
 @Controller
@@ -46,6 +51,12 @@ public class AuthenticationController {
         }
         final UserDetails user = userService.loadUserByUsername(request.getEmail());
         return ResponseEntity.ok(new BaseResponse<>("Success", jwtUtils.generateToken(user)));
+    }
+    @GetMapping("/authorizeGithub")
+    public ResponseEntity<BaseResponse> authorizeGithub() {
+        URI link=getAuthLinkFromGit(gitClientId);
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).header("Location",
+                String.valueOf(link)).body(new BaseResponse<>("Success", link));
     }
 
     @GetMapping("/github")

@@ -1,15 +1,21 @@
 package projectManagement.util;
 
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import projectManagement.dto.GitTokenResponse;
 import projectManagement.dto.GitEmailResponse;
+
+import javax.swing.text.html.HTML;
+import java.net.URI;
 
 public class GitAuthUtil {
     private static Logger logger = LogManager.getLogger(GitAuthUtil.class);
@@ -20,6 +26,28 @@ public class GitAuthUtil {
         String email = GitAuthUtil.getGitEmailFromToken(token);
         logger.debug("git email:" + email);
         return email;
+    }
+    public static URI getAuthLinkFromGit( String gitClientId) throws RestClientException {
+        String url = "https://github.com/login/oauth/authorize?";
+        // add params to request
+        String url_params = url + "client_id=" + gitClientId + "&scope=user:email";
+
+        URI link= null;
+        ResponseEntity<String> response = null;
+
+        CloseableHttpClient httpClient = HttpClientBuilder.create().disableRedirectHandling().build();
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        RestTemplate restTemplate = new RestTemplate(factory);
+
+        //RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            response = restTemplate.getForEntity(url_params,String.class);
+            link = response.getHeaders().getLocation();
+        } catch (RestClientException e) {
+            throw new RestClientException("error: git- http get link failed");
+        }
+        return link;
     }
 
     public static String getGitTokenFromCode(String code, String gitClientId, String gitClientSecret) throws RestClientException {
