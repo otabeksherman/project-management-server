@@ -1,5 +1,6 @@
 package projectManagement.service;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,11 +10,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import projectManagement.dto.RegistrationDto;
-import projectManagement.repository.UserRepository;
 import projectManagement.entities.user.User;
+import projectManagement.repository.UserRepository;
 
 import java.sql.SQLDataException;
 import java.util.Collections;
+
+import static projectManagement.util.NotificationUtil.sendMail;
 
 @Component
 @RequiredArgsConstructor
@@ -50,16 +53,26 @@ public class UserService implements UserDetailsService {
         return false;
     }
 
-    public User notifyByEmail(String email, boolean notify) throws SQLDataException {
+    public User notifyByEmail(String email, boolean notify) throws Exception {
+        User user;
         if (userRepository.findUserByEmail(email) == null) {
             throw new SQLDataException(String.format("Email %s is not exists in users table", email));
         } else {
-            User user = userRepository.findUserByEmail(email);
+            user = userRepository.findUserByEmail(email);
             user.setEmailNotify(notify);
-            return userRepository.save(user);
+            if (notify == true) {
+                String subject = "email notification";
+                String message = "email notifications have been updated to active. From now on you will start receiving updates by email";
+                try {
+                    sendMail(email, subject, message);
+                } catch (GoogleJsonResponseException e) {
+                    throw new Exception("Unable to send mail");
+                }
+            }
         }
+        return userRepository.save(user);
     }
-
 }
+
 
 
