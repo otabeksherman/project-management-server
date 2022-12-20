@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import projectManagement.dto.BaseResponse;
 import projectManagement.dto.RegistrationDto;
+import projectManagement.entities.user.User;
 import projectManagement.service.UserService;
 
 import java.sql.SQLDataException;
@@ -25,6 +26,7 @@ public class UserController {
 
     @PostMapping("/registration")
     public ResponseEntity<BaseResponse> register(@RequestBody RegistrationDto dto) {
+        logger.info("in register(): ");
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Account created successfully",
@@ -34,5 +36,16 @@ public class UserController {
                     .body(new BaseResponse<>("Email already exists", dto.getEmail()));
         }
     }
+
+    @PostMapping("/notify")
+    public ResponseEntity<BaseResponse> notifyByEmail(@RequestParam String email, @RequestParam boolean notify) {
+        logger.info("in notifyByEmail(): ");
+        try {
+            return ResponseEntity.ok(new BaseResponse<>("Email notify updated", userService.notifyByEmail(email, notify).getEmail()));
+        } catch (SQLDataException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
+        }
+    }
+
 
 }

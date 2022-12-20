@@ -42,11 +42,22 @@ public class UserService implements UserDetailsService {
         User user = new User(email);
         return userRepository.save(user);
     }
-    public boolean emailExists(String email){
-        if (userRepository.findUserByEmail(email) != null){
+
+    public boolean emailExists(String email) {
+        if (userRepository.findUserByEmail(email) != null) {
             return true;
         }
         return false;
+    }
+
+    public User notifyByEmail(String email, boolean notify) throws SQLDataException {
+        if (userRepository.findUserByEmail(email) == null) {
+            throw new SQLDataException(String.format("Email %s is not exists in users table", email));
+        } else {
+            User user = userRepository.findUserByEmail(email);
+            user.setEmailNotify(notify);
+            return userRepository.save(user);
+        }
     }
 
 }
