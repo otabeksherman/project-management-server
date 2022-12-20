@@ -1,6 +1,8 @@
 package projectManagement.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +18,7 @@ import java.util.Collections;
 @Component
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
+    private static Logger logger = LogManager.getLogger(UserService.class);
 
     private final UserRepository userRepository;
 
@@ -34,4 +37,18 @@ public class UserService implements UserDetailsService {
             return userRepository.save(user);
         }
     }
+
+    public User registerWithGit(String email) {
+        User user = new User(email);
+        return userRepository.save(user);
+    }
+    public boolean emailExists(String email){
+        if (userRepository.findUserByEmail(email) != null){
+            return true;
+        }
+        return false;
+    }
+
 }
+
+

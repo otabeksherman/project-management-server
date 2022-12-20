@@ -7,9 +7,7 @@ import projectManagement.entities.board.Board;
 import projectManagement.entities.notifictaion.Notification;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -21,8 +19,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    private boolean githubAccount;
+    @Column(unique = true, nullable = false)
     private String email;
+    @Column(nullable = false)
     private String password;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Board> boards;
@@ -31,9 +31,19 @@ public class User {
     private Boolean emailNotify;
 
     public User(String email, String password) {
+        this.githubAccount = false;
         this.email = email;
         this.password = password;
-        this.emailNotify = true; //default is true
+        this.emailNotify = true;
+        this.boards = new HashSet<>();
+        this.notifications = new HashSet<>();
+    }
+
+    public User(String email) {
+        this.githubAccount = true;
+        this.email = email;
+        this.password = email;
+        this.emailNotify = true;
         this.boards = new HashSet<>();
         this.notifications = new HashSet<>();
     }
