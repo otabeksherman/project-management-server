@@ -13,17 +13,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
-import projectManagement.dto.BaseResponse;
-import projectManagement.util.JwtUtils;
 import projectManagement.dto.AuthenticationRequest;
+import projectManagement.dto.BaseResponse;
 import projectManagement.service.UserService;
-
-import javax.swing.text.html.HTML;
+import projectManagement.util.JwtUtils;
 
 import java.net.URI;
 
-import static projectManagement.util.GitAuthUtil.getAuthLinkFromGit;
-import static projectManagement.util.GitAuthUtil.getEmailFromGit;
+import static projectManagement.util.GitAuthUtil.*;
 
 @Controller
 @CrossOrigin
@@ -42,6 +39,7 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<BaseResponse> authenticate(@RequestBody AuthenticationRequest request) {
+        logger.info("in authenticate(): ");
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -52,11 +50,21 @@ public class AuthenticationController {
         final UserDetails user = userService.loadUserByUsername(request.getEmail());
         return ResponseEntity.ok(new BaseResponse<>("Success", jwtUtils.generateToken(user)));
     }
+
     @GetMapping("/authorizeGithub")
     public ResponseEntity<BaseResponse> authorizeGithub() {
-        URI link=getAuthLinkFromGit(gitClientId);
-        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).header("Location",
-                String.valueOf(link)).body(new BaseResponse<>("Success", link));
+        logger.info("in authorizeGithub(): ");
+        try {
+            URI link = getAuthLinkFromGit(gitClientId);
+            if (isReachable(link)) {
+                return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).header("Location",
+                        String.valueOf(link)).body(new BaseResponse<>("Success", link));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Link is not reachable", null));
+            }
+        } catch (RestClientException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Failed", e.getMessage()));
+        }
     }
 
     @GetMapping("/github")
@@ -73,7 +81,7 @@ public class AuthenticationController {
             }
             return ResponseEntity.ok(new BaseResponse<>("Success", jwtUtils.generateToken(user)));
         } catch (RestClientException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Failed",e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Failed", e.getMessage()));
         }
     }
 
