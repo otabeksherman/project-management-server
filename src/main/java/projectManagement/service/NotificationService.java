@@ -10,6 +10,7 @@ import projectManagement.entities.notifictaion.Notification;
 import projectManagement.entities.notifictaion.NotificationType;
 import projectManagement.entities.user.User;
 import projectManagement.repository.UserRepository;
+
 import java.sql.SQLDataException;
 import java.time.LocalDate;
 
@@ -22,35 +23,39 @@ public class NotificationService {
 
     private final UserRepository userRepository;
 
-    public void addNotification(String emailUser,String emailAssigner,Board board, NotificationType notificationtype) throws Exception {
+    public void addNotification(String emailUser, String emailAssigner, Board board, NotificationType notificationtype) throws Exception {
         logger.info("in addNotification(): ");
-        if (userRepository.findUserByEmail(emailUser) == null && userRepository.findUserByEmail(emailAssigner)== null) {
+        if (userRepository.findUserByEmail(emailUser) == null && userRepository.findUserByEmail(emailAssigner) == null) {
             throw new SQLDataException(String.format("Email %s is not exists in users table", emailUser));
         } else {
             User user = userRepository.findUserByEmail(emailUser);
             User userAssigner = userRepository.findUserByEmail(emailAssigner);
 
-            Notification notification=new Notification.Builder()
+            Notification notification = new Notification.Builder()
                     .user(user).assigner(userAssigner).board(board).date(LocalDate.now())
                     .notificationType(notificationtype).build();
 
             user.addNotifications(notification);
-            if(notification.getNotificationType().isTypeActive()) {
 
-                if (user.getEmailNotify()) {
-                    String subject = "Project Management-email notification";
-                    String message = "notification from user: " + emailAssigner +
-                            "notification: " + notification.getNotificationType().getText();//TODO: change the message
-                    try {
-                        sendMail(user.getEmail(), subject, message);
-                    } catch (Exception e) {
-                        throw new Exception("Unable to send mail");
-                    }
-                }
-                if (user.getPopNotify()) {
-                    //TODO: implement return to client with docket/sse
-                }
+            if (notification.getNotificationType().isTypeActive()) {
+                sendNotification(user, emailAssigner, notification);
             }
+        }
+    }
+
+    private void sendNotification(User user, String emailAssigner, Notification notification) throws Exception {
+        if (user.getEmailNotify()) {
+            String subject = "Project Management-email notification";
+            String message = "notification from user: " + emailAssigner +
+                    "notification: " + notification.getNotificationType().getText();//TODO: change the message
+            try {
+                sendMail(user.getEmail(), subject, message);
+            } catch (Exception e) {
+                throw new Exception("Unable to send mail");
+            }
+        }
+        if (user.getPopNotify()) {
+            //TODO: implement return to client with socket/sse
         }
     }
 }
