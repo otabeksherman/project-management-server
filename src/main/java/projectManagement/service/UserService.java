@@ -32,9 +32,9 @@ public class UserService implements UserDetailsService {
                 Collections.singleton(new SimpleGrantedAuthority("USER"))); // TODO Set relevant roles
     }
 
-    public boolean isGithubAccount(String email){
+    public boolean isGithubAccount(String email) {
         User user = userRepository.findUserByEmail(email);
-        return  user.isGithubAccount();
+        return user.isGithubAccount();
     }
 
     public User register(RegistrationDto dto) throws SQLDataException {
@@ -52,10 +52,7 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean emailExists(String email) {
-        if (userRepository.findUserByEmail(email) != null) {
-            return true;
-        }
-        return false;
+        return (userRepository.findUserByEmail(email) != null);
     }
 
     public User notifyByEmail(String email, boolean notify) throws Exception {

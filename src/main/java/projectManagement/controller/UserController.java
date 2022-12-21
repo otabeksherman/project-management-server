@@ -37,15 +37,4 @@ public class UserController {
         }
     }
 
-    @PostMapping("/notify")
-    public ResponseEntity<BaseResponse> notifyByEmail(@RequestParam String email, @RequestParam boolean notify) throws Exception {
-        logger.info("in notifyByEmail(): ");
-        try {
-            return ResponseEntity.ok(new BaseResponse<>("Email notify updated", userService.notifyByEmail(email, notify).getEmail()));
-        } catch (SQLDataException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
-        }
-    }
-
-
 }

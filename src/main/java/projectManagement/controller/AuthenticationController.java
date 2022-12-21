@@ -68,9 +68,8 @@ public class AuthenticationController {
                 user = userService.loadUserByUsername(userService.registerWithGit(email).getEmail());
             }
             return ResponseEntity.ok(new BaseResponse<>("Success", jwtUtils.generateToken(user)));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Failed", e.getMessage()));
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("git token is null", e.getMessage()));
         }
     }
-
 }
