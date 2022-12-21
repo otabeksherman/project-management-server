@@ -3,7 +3,6 @@ package projectManagement.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.stereotype.Component;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.notifictaion.Notification;
