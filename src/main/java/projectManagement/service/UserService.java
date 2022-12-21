@@ -16,8 +16,6 @@ import projectManagement.repository.UserRepository;
 import java.sql.SQLDataException;
 import java.util.Collections;
 
-import static projectManagement.util.NotificationUtil.sendMail;
-
 @Component
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
@@ -53,26 +51,6 @@ public class UserService implements UserDetailsService {
 
     public boolean emailExists(String email) {
         return (userRepository.findUserByEmail(email) != null);
-    }
-
-    public User notifyByEmail(String email, boolean notify) throws Exception {
-        User user;
-        if (userRepository.findUserByEmail(email) == null) {
-            throw new SQLDataException(String.format("Email %s is not exists in users table", email));
-        } else {
-            user = userRepository.findUserByEmail(email);
-            user.setEmailNotify(notify);
-            if (notify == true) {
-                String subject = "email notification";
-                String message = "Email notifications have been updated to active. From now on you will start receiving updates by email";
-                try {
-                    sendMail(email, subject, message);
-                } catch (GoogleJsonResponseException e) {
-                    throw new Exception("Unable to send mail");
-                }
-            }
-        }
-        return userRepository.save(user);
     }
 }
 
