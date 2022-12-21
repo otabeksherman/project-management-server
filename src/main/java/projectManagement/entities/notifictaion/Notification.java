@@ -34,7 +34,4 @@ public class Notification {
     private LocalDate date;
     private NotificationType notificationType;
     //T data;
-
-
-
 }

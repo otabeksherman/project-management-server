@@ -76,6 +76,10 @@ public class AuthenticationController {
 
             if (userService.emailExists(email)) {
                 user = userService.loadUserByUsername(email);
+                if(!userService.isGithubAccount(user.getUsername())){
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                            new BaseResponse<>("Failed- user register already without github",user.getUsername()));
+                }
             } else {
                 user = userService.loadUserByUsername(userService.registerWithGit(email).getEmail());
             }

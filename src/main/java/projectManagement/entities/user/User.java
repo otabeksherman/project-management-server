@@ -47,4 +47,8 @@ public class User {
         this.boards = new HashSet<>();
         this.notifications = new HashSet<>();
     }
+
+    public boolean isGithubAccount() {
+        return githubAccount;
+    }
 }
