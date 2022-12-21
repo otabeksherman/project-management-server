@@ -1,5 +1,6 @@
 package projectManagement.controller;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,12 +41,14 @@ public class UserController {
     }
 
     @PostMapping("/notify")
-    public ResponseEntity<BaseResponse> notifyByEmail(@RequestParam String email, @RequestParam boolean notify) throws Exception {
+    public ResponseEntity<BaseResponse> notifyByEmail(@RequestParam String email, @RequestParam boolean notify) {
         logger.info("in notifyByEmail(): ");
         try {
             return ResponseEntity.ok(new BaseResponse<>("Email notify updated", userService.notifyByEmail(email, notify).getEmail()));
         } catch (SQLDataException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Unable to send mail", null));
         }
     }
 

@@ -1,5 +1,6 @@
 package projectManagement.service;
 
+import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -65,8 +66,8 @@ public class UserService implements UserDetailsService {
                 String message = "email notifications have been updated to active. From now on you will start receiving updates by email";
                 try {
                     sendMail(email, subject, message);
-                } catch (GoogleJsonResponseException e) {
-                    throw new Exception("Unable to send mail");
+                } catch (Exception e) {
+                    throw new Exception(String.format("failed to send email: ", email));
                 }
             }
         }
