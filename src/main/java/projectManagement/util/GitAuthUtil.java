@@ -21,9 +21,12 @@ import java.net.URL;
 public class GitAuthUtil {
     private static Logger logger = LogManager.getLogger(GitAuthUtil.class);
 
-    public static String getEmailFromGit(String code, String gitClientId, String gitClientSecret) {
+    public static String getEmailFromGit(String code, String gitClientId, String gitClientSecret) throws Exception {
         String token = GitAuthUtil.getGitTokenFromCode(code, gitClientId, gitClientSecret);
         logger.debug("git token:" + token);
+        if(token==null){
+            throw new Exception("git token is null!");
+        }
         String email = GitAuthUtil.getGitEmailFromToken(token);
         logger.debug("git email:" + email);
         return email;
