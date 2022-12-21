@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import projectManagement.dto.BaseResponse;
 import projectManagement.dto.RegistrationDto;
 import projectManagement.entities.user.User;
+import projectManagement.service.NotificationService;
 import projectManagement.service.UserService;
 
 import java.sql.SQLDataException;
@@ -22,6 +23,8 @@ import java.sql.SQLDataException;
 public class UserController {
 
     private final UserService userService;
+    private final NotificationService notificationService;
+
     private static Logger logger = LogManager.getLogger(UserController.class);
 
     @PostMapping("/registration")
@@ -41,11 +44,10 @@ public class UserController {
     public ResponseEntity<BaseResponse> notifyByEmail(@RequestParam String email, @RequestParam boolean notify) throws Exception {
         logger.info("in notifyByEmail(): ");
         try {
-            return ResponseEntity.ok(new BaseResponse<>("Email notify updated", userService.notifyByEmail(email, notify).getEmail()));
+            return ResponseEntity.ok(new BaseResponse<>("Email notify updated", notificationService.notifyByEmail(email, notify).getEmail()));
         } catch (SQLDataException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
         }
     }
-
 
 }

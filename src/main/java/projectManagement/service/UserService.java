@@ -16,7 +16,7 @@ import projectManagement.repository.UserRepository;
 import java.sql.SQLDataException;
 import java.util.Collections;
 
-import static projectManagement.util.NotificationUtil.sendMail;
+import static projectManagement.util.MailUtil.sendMail;
 
 @Component
 @RequiredArgsConstructor
@@ -72,6 +72,7 @@ public class UserService implements UserDetailsService {
         }
         return userRepository.save(user);
     }
+
 }
 
 

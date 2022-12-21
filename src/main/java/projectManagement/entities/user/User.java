@@ -28,7 +28,10 @@ public class User {
     private Set<Board> boards;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Notification> notifications;
+    @Column(nullable = false)
     private Boolean emailNotify;
+    @Column(nullable = false)
+    private Boolean popNotify;
 
     public User(String email, String password) {
         this.githubAccount = false;
@@ -46,5 +49,9 @@ public class User {
         this.emailNotify = true;
         this.boards = new HashSet<>();
         this.notifications = new HashSet<>();
+    }
+
+    public void addNotifications(Notification notification) {
+        this.notifications.add(notification);
     }
 }

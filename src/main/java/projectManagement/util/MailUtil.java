@@ -27,7 +27,7 @@ import java.util.Set;
 import static com.google.api.services.gmail.GmailScopes.GMAIL_SEND;
 import static javax.mail.Message.RecipientType.TO;
 
-public class NotificationUtil {
+public class MailUtil {
 
     private static final String FROM_EMAIL = "tbz1996@gmail.com";
 
@@ -43,7 +43,7 @@ public class NotificationUtil {
 
     private static Credential getCredentials(final NetHttpTransport httpTransport, GsonFactory jsonFactory)
             throws IOException {
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(NotificationUtil.class
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(MailUtil.class
                 .getResourceAsStream("/client_secret_832098226915-qg699ff2itjs5q3hlifomniigbf3jhpv.apps.googleusercontent.com.json")));
 
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
