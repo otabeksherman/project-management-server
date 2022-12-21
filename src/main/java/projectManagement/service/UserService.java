@@ -1,6 +1,5 @@
 package projectManagement.service;
 
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,7 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import projectManagement.dto.RegistrationDto;
 import projectManagement.entities.user.User;
 import projectManagement.repository.UserRepository;
@@ -16,9 +15,7 @@ import projectManagement.repository.UserRepository;
 import java.sql.SQLDataException;
 import java.util.Collections;
 
-import static projectManagement.util.NotificationUtil.sendMail;
-
-@Component
+@Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private static Logger logger = LogManager.getLogger(UserService.class);
@@ -53,26 +50,6 @@ public class UserService implements UserDetailsService {
 
     public boolean emailExists(String email) {
         return (userRepository.findUserByEmail(email) != null);
-    }
-
-    public User notifyByEmail(String email, boolean notify) throws Exception {
-        User user;
-        if (userRepository.findUserByEmail(email) == null) {
-            throw new SQLDataException(String.format("Email %s is not exists in users table", email));
-        } else {
-            user = userRepository.findUserByEmail(email);
-            user.setEmailNotify(notify);
-            if (notify == true) {
-                String subject = "email notification";
-                String message = "Email notifications have been updated to active. From now on you will start receiving updates by email";
-                try {
-                    sendMail(email, subject, message);
-                } catch (GoogleJsonResponseException e) {
-                    throw new Exception("Unable to send mail");
-                }
-            }
-        }
-        return userRepository.save(user);
     }
 }
 
