@@ -41,8 +41,10 @@ public class UserController {
     }
 
     @PostMapping("/notify")
-    public ResponseEntity<BaseResponse> notifyByEmail(@RequestParam String email, @RequestParam boolean notify) {
+    public ResponseEntity<BaseResponse> notifyByEmail(@RequestParam String token, @RequestParam String email, @RequestParam boolean notify) {
         logger.info("in notifyByEmail(): ");
+
+        //TODO: verify email and token
         try {
             return ResponseEntity.ok(new BaseResponse<>("Email notify updated", userService.notifyByEmail(email, notify).getEmail()));
         } catch (SQLDataException e) {

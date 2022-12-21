@@ -48,10 +48,7 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean emailExists(String email) {
-        if (userRepository.findUserByEmail(email) != null) {
-            return true;
-        }
-        return false;
+        return (userRepository.findUserByEmail(email) != null);
     }
 
     public User notifyByEmail(String email, boolean notify) throws Exception {
