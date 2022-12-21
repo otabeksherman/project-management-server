@@ -22,8 +22,9 @@ public class NotificationService {
 
     private final UserRepository userRepository;
 
-    public void addNotification(String emailUser, String emailAssigner, Board board, NotificationType notificationtype) throws Exception {
+    public void addNotification(String emailUser, String emailAssigner, Board board, NotificationType notificationtype) throws Exception, SQLDataException {
         logger.info("in addNotification(): ");
+        //TODO: handle exception (Sql exception)
         if (userRepository.findUserByEmail(emailUser) == null && userRepository.findUserByEmail(emailAssigner) == null) {
             throw new SQLDataException(String.format("Email %s is not exists in users table", emailUser));
         } else {
@@ -35,9 +36,14 @@ public class NotificationService {
                     .notificationType(notificationtype).build();
 
             user.addNotifications(notification);
+            userRepository.save(user);
 
             if (notification.getNotificationType().isTypeActive()) {
-                sendNotification(user, emailAssigner, notification);
+                try {
+                    sendNotification(user, emailAssigner, notification);
+                } catch (Exception e) {
+                    throw new Exception("Unable to send mail");
+                }
             }
         }
     }
@@ -57,4 +63,6 @@ public class NotificationService {
             //TODO: implement return to client with socket/sse
         }
     }
+
+
 }

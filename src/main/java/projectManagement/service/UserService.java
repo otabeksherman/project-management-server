@@ -11,11 +11,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import projectManagement.dto.RegistrationDto;
+import projectManagement.entities.notifictaion.Notification;
 import projectManagement.entities.user.User;
 import projectManagement.repository.UserRepository;
+import projectManagement.util.JwtUtils;
 
 import java.sql.SQLDataException;
 import java.util.Collections;
+import java.util.Set;
 
 import static projectManagement.util.MailUtil.sendMail;
 
@@ -74,6 +77,15 @@ public class UserService implements UserDetailsService {
             }
         }
         return userRepository.save(user);
+    }
+
+    public Set<Notification> getUserNotification(String email) throws SQLDataException {
+        if (userRepository.findUserByEmail(email) == null) {
+            throw new SQLDataException(String.format("Email %s is not exists in users table", email));
+        } else {
+            User user = userRepository.findUserByEmail(email);
+            return user.getNotifications();
+        }
     }
 
 }
