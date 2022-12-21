@@ -51,22 +51,6 @@ public class AuthenticationController {
         return ResponseEntity.ok(new BaseResponse<>("Success", jwtUtils.generateToken(user)));
     }
 
-    @GetMapping("/authorizeGithub")
-    public ResponseEntity<BaseResponse> authorizeGithub() {
-        logger.info("in authorizeGithub(): ");
-        try {
-            URI link = getAuthLinkFromGit(gitClientId);
-            if (isReachable(link)) {
-                return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).header("Location",
-                        String.valueOf(link)).body(new BaseResponse<>("Success", link));
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Link is not reachable", null));
-            }
-        } catch (RestClientException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Failed", e.getMessage()));
-        }
-    }
-
     @GetMapping("/github")
     public ResponseEntity<BaseResponse> authWithGit(@RequestParam String code) {
         logger.info("in authWithGit(): ");
@@ -76,13 +60,16 @@ public class AuthenticationController {
 
             if (userService.emailExists(email)) {
                 user = userService.loadUserByUsername(email);
+                if(!userService.isGithubAccount(user.getUsername())){
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                            new BaseResponse<>("Failed- user register already without github",user.getUsername()));
+                }
             } else {
                 user = userService.loadUserByUsername(userService.registerWithGit(email).getEmail());
             }
             return ResponseEntity.ok(new BaseResponse<>("Success", jwtUtils.generateToken(user)));
-        } catch (RestClientException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Failed", e.getMessage()));
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("git token is null", e.getMessage()));
         }
     }
-
 }

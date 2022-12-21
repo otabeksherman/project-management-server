@@ -31,7 +31,6 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.OPTIONS, "/").permitAll()
                 .antMatchers("/**/auth/**").permitAll()
                 .antMatchers("/**/registration/**").permitAll()
-                .antMatchers("/**/notify/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()

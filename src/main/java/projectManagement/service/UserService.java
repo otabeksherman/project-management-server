@@ -33,6 +33,11 @@ public class UserService implements UserDetailsService {
                 Collections.singleton(new SimpleGrantedAuthority("USER"))); // TODO Set relevant roles
     }
 
+    public boolean isGithubAccount(String email) {
+        User user = userRepository.findUserByEmail(email);
+        return user.isGithubAccount();
+    }
+
     public User register(RegistrationDto dto) throws SQLDataException {
         if (userRepository.findUserByEmail(dto.getEmail()) != null) {
             throw new SQLDataException(String.format("Email %s exists in users table", dto.getEmail()));
@@ -60,7 +65,7 @@ public class UserService implements UserDetailsService {
             user.setEmailNotify(notify);
             if (notify == true) {
                 String subject = "email notification";
-                String message = "email notifications have been updated to active. From now on you will start receiving updates by email";
+                String message = "Email notifications have been updated to active. From now on you will start receiving updates by email";
                 try {
                     sendMail(email, subject, message);
                 } catch (Exception e) {

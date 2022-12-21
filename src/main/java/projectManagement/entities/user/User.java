@@ -51,6 +51,10 @@ public class User {
         this.notifications = new HashSet<>();
     }
 
+    public boolean isGithubAccount() {
+        return githubAccount;
+    }
+
     public void addNotifications(Notification notification) {
         this.notifications.add(notification);
     }
