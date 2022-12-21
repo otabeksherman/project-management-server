@@ -1,5 +1,6 @@
 package projectManagement.service;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,11 +10,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import projectManagement.dto.RegistrationDto;
-import projectManagement.repository.UserRepository;
 import projectManagement.entities.user.User;
+import projectManagement.repository.UserRepository;
 
 import java.sql.SQLDataException;
 import java.util.Collections;
+
+import static projectManagement.util.NotificationUtil.sendMail;
 
 @Component
 @RequiredArgsConstructor
@@ -29,6 +32,11 @@ public class UserService implements UserDetailsService {
                 Collections.singleton(new SimpleGrantedAuthority("USER"))); // TODO Set relevant roles
     }
 
+    public boolean isGithubAccount(String email) {
+        User user = userRepository.findUserByEmail(email);
+        return user.isGithubAccount();
+    }
+
     public User register(RegistrationDto dto) throws SQLDataException {
         if (userRepository.findUserByEmail(dto.getEmail()) != null) {
             throw new SQLDataException(String.format("Email %s exists in users table", dto.getEmail()));
@@ -42,13 +50,31 @@ public class UserService implements UserDetailsService {
         User user = new User(email);
         return userRepository.save(user);
     }
-    public boolean emailExists(String email){
-        if (userRepository.findUserByEmail(email) != null){
-            return true;
-        }
-        return false;
+
+    public boolean emailExists(String email) {
+        return (userRepository.findUserByEmail(email) != null);
     }
 
+    public User notifyByEmail(String email, boolean notify) throws Exception {
+        User user;
+        if (userRepository.findUserByEmail(email) == null) {
+            throw new SQLDataException(String.format("Email %s is not exists in users table", email));
+        } else {
+            user = userRepository.findUserByEmail(email);
+            user.setEmailNotify(notify);
+            if (notify == true) {
+                String subject = "email notification";
+                String message = "Email notifications have been updated to active. From now on you will start receiving updates by email";
+                try {
+                    sendMail(email, subject, message);
+                } catch (GoogleJsonResponseException e) {
+                    throw new Exception("Unable to send mail");
+                }
+            }
+        }
+        return userRepository.save(user);
+    }
 }
+
 
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import projectManagement.dto.BaseResponse;
 import projectManagement.dto.RegistrationDto;
+import projectManagement.entities.user.User;
 import projectManagement.service.UserService;
 
 import java.sql.SQLDataException;
@@ -25,6 +26,7 @@ public class UserController {
 
     @PostMapping("/registration")
     public ResponseEntity<BaseResponse> register(@RequestBody RegistrationDto dto) {
+        logger.info("in register(): ");
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Account created successfully",
