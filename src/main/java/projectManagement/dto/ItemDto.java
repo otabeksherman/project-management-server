@@ -13,28 +13,19 @@ public class ItemDto {
     @NotNull
     @NotEmpty
     private String type;
-
     @NotNull
     @NotEmpty
     private String status;
-
     private Long parentItemId;
-
     @NotNull
     @NotEmpty
     private Long boardId;
-
-    @NotNull
-    @NotEmpty
-    private Long creatorId;
     private Long assignedToId;
     private Date dueDate;
     private int importance;
-
     @NotNull
     @NotEmpty
     private String title;
-
     @NotNull
     @NotEmpty
     private String description;

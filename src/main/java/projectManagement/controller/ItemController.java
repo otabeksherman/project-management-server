@@ -6,10 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import projectManagement.dto.BaseResponse;
 import projectManagement.dto.ItemDto;
 import projectManagement.service.ItemService;
@@ -25,12 +22,12 @@ public class ItemController {
     private static Logger logger = LogManager.getLogger(ItemController.class);
 
     @PostMapping("/create")
-    public ResponseEntity<BaseResponse> create(@RequestBody ItemDto dto) {
+    public ResponseEntity<BaseResponse> create(@RequestBody ItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in create(): ");
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Item created successfully",
-                            itemService.create(dto)));
+                            itemService.create(dto, userEmail)));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), dto));

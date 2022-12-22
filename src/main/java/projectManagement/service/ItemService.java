@@ -27,14 +27,14 @@ public class ItemService {
 
     private static Logger logger = LogManager.getLogger(ItemService.class);
 
-    public Item create(ItemDto dto) throws IllegalArgumentException {
+    public Item create(ItemDto dto, String userEmail) throws IllegalArgumentException {
         Optional<Board> board = boardRepository.findById(dto.getBoardId());
         Optional<Item> parentItem = null;
         Optional<User> assignedTo = null;
         if (dto.getParentItemId() != null) {
             parentItem = itemRepository.findById(dto.getParentItemId());
         }
-        Optional<User> creator = userRepository.findById(dto.getCreatorId());
+        User creator = userRepository.findUserByEmail(userEmail);
         if (dto.getAssignedToId() != null) {
             assignedTo = userRepository.findById(dto.getAssignedToId());
         }
@@ -54,15 +54,12 @@ public class ItemService {
             throw new IllegalArgumentException("parent item does not exist");
         }
 
-        if (!creator.isPresent()) {
-            throw new IllegalArgumentException("invalid creator id");
-        }
         if (assignedTo != null && !assignedTo.isPresent()) {
             throw new IllegalArgumentException("invalid assignedTo id");
         }
         ItemType type = board.get().getTypes().stream().filter(t -> t.getName().equals(dto.getType())).findFirst().orElse(null);
         Status status = board.get().getStatuses().stream().filter(s -> s.getName().equals(dto.getStatus())).findFirst().orElse(null);
-        Item item = new Item(type, status, parentItem != null ? parentItem.get() : null, board.get(), creator.get(), assignedTo != null ? assignedTo.get() : null, dto.getDueDate(), dto.getImportance(), dto.getTitle(), dto.getDescription());
+        Item item = new Item(type, status, parentItem != null ? parentItem.get() : null, board.get(), creator, assignedTo != null ? assignedTo.get() : null, dto.getDueDate(), dto.getImportance(), dto.getTitle(), dto.getDescription());
         return itemRepository.save(item);
     }
 }
