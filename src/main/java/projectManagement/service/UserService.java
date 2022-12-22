@@ -1,6 +1,5 @@
 package projectManagement.service;
 
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,7 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import projectManagement.dto.RegistrationDto;
 import projectManagement.entities.user.User;
 import projectManagement.repository.UserRepository;
@@ -16,7 +15,7 @@ import projectManagement.repository.UserRepository;
 import java.sql.SQLDataException;
 import java.util.Collections;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private static Logger logger = LogManager.getLogger(UserService.class);
