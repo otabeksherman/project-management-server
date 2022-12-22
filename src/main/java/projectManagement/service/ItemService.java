@@ -28,38 +28,29 @@ public class ItemService {
     private static Logger logger = LogManager.getLogger(ItemService.class);
 
     public Item create(ItemDto dto, String userEmail) throws IllegalArgumentException {
-        Optional<Board> board = boardRepository.findById(dto.getBoardId());
-        Optional<Item> parentItem = null;
-        Optional<User> assignedTo = null;
-        if (dto.getParentItemId() != null) {
-            parentItem = itemRepository.findById(dto.getParentItemId());
-        }
+        Board board = boardRepository.findById(dto.getBoardId())
+                .orElseThrow(() -> new IllegalArgumentException("board does not exist"));
+
         User creator = userRepository.findUserByEmail(userEmail);
-        if (dto.getAssignedToId() != null) {
-            assignedTo = userRepository.findById(dto.getAssignedToId());
-        }
-        if (!board.isPresent()) {
-            throw new IllegalArgumentException("board does not exist");
-        }
-        List<String> itemTypesNames = board.get().getTypes().stream().map(type -> type.getName()).collect(Collectors.toList());
-        if (!itemTypesNames.contains(dto.getType())) {
+        Item parentItem = dto.getParentItemId() != null ?
+                itemRepository.findById(dto.getParentItemId())
+                        .orElseThrow(() -> new IllegalArgumentException("parent item does not exist")) : null;
+        User assignedTo = dto.getAssignedToId() != null ?
+                userRepository.findById(dto.getAssignedToId())
+                        .orElseThrow(() -> new IllegalArgumentException("invalid assignedTo id")) : null;
+
+        if (!board.getTypes().stream().map(ItemType::getName).collect(Collectors.toList()).contains(dto.getType())) {
             throw new IllegalArgumentException("illegal item type");
         }
-        List<String> statusesNames = board.get().getStatuses().stream().map(status -> status.getName()).collect(Collectors.toList());
-        if (!statusesNames.contains(dto.getStatus())) {
+        ItemType type = board.getTypes().stream().filter(t -> t.getName().equals(dto.getType())).findFirst().orElse(null);
+
+        if (!board.getStatuses().stream().map(Status::getName).collect(Collectors.toList()).contains(dto.getStatus())) {
             throw new IllegalArgumentException("illegal item status");
         }
+        Status status = board.getStatuses().stream().filter(s -> s.getName().equals(dto.getStatus())).findFirst().orElse(null);
 
-        if (parentItem != null && !parentItem.isPresent()) {
-            throw new IllegalArgumentException("parent item does not exist");
-        }
-
-        if (assignedTo != null && !assignedTo.isPresent()) {
-            throw new IllegalArgumentException("invalid assignedTo id");
-        }
-        ItemType type = board.get().getTypes().stream().filter(t -> t.getName().equals(dto.getType())).findFirst().orElse(null);
-        Status status = board.get().getStatuses().stream().filter(s -> s.getName().equals(dto.getStatus())).findFirst().orElse(null);
-        Item item = new Item(type, status, parentItem != null ? parentItem.get() : null, board.get(), creator, assignedTo != null ? assignedTo.get() : null, dto.getDueDate(), dto.getImportance(), dto.getTitle(), dto.getDescription());
+        Item item = new Item(type, status, parentItem, board, creator, assignedTo, dto.getDueDate(), dto.getImportance(), dto.getTitle(), dto.getDescription());
         return itemRepository.save(item);
     }
+
 }
