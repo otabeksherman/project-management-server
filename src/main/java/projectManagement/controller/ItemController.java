@@ -7,8 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import projectManagement.dto.BaseResponse;
-import projectManagement.dto.ItemDto;
+import projectManagement.dto.*;
 import projectManagement.service.ItemService;
 
 import java.sql.SQLDataException;
@@ -32,6 +31,41 @@ public class ItemController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
-
+    }
+    @PatchMapping("/update")
+    public ResponseEntity<BaseResponse> update(@RequestBody UpdateItemDto dto, @RequestAttribute String userEmail) {
+        logger.info("in update(): ");
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new BaseResponse<>("Item updated successfully",
+                            itemService.update(dto)));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new BaseResponse<>(e.getMessage(), dto));
+        }
+    }
+    @PatchMapping("/update/type")
+    public ResponseEntity<BaseResponse> updateType(@RequestBody UpdateItemTypeDto dto, @RequestAttribute String userEmail) {
+        logger.info("in updateType(): ");
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new BaseResponse<>("Item type updated successfully",
+                            itemService.updateType(dto)));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new BaseResponse<>(e.getMessage(), dto));
+        }
+    }
+    @PatchMapping("/update/status")
+    public ResponseEntity<BaseResponse> updateStatus(@RequestBody UpdateItemStatusDto dto, @RequestAttribute String userEmail) {
+        logger.info("in updateStatus(): ");
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new BaseResponse<>("Item status updated successfully",
+                            itemService.updateStatus(dto)));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new BaseResponse<>(e.getMessage(), dto));
+        }
     }
 }
