@@ -40,8 +40,8 @@ public class Item {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User creator;
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "assigned_to_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "assigned_to_id")
     private User assignedTo;
     private Date dueDate;
     private int importance;
@@ -51,17 +51,17 @@ public class Item {
     private Set<Comment> comments;
 
 
-    public Item(ItemType type, Item parent, User creator, User assignedTo, Date dueDate, int importance, String title, String description) {
+    public Item(ItemType type, Status status, Item parent, Board board, User creator, User assignedTo, Date dueDate, int importance, String title, String description) {
         this.type = type;
+        this.status = status;
         this.parent = parent;
+        this.board = board;
         this.creator = creator;
-        this.assignedTo = assignedTo;
+        this.assignedTo=assignedTo;
         this.dueDate = dueDate;
         this.importance = importance;
         this.title = title;
         this.description = description;
-        this.comments = new HashSet<>();
+        this.comments=new HashSet<>();
     }
-
-
 }

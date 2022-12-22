@@ -7,6 +7,8 @@ import lombok.Setter;
 import projectManagement.entities.board.Board;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,15 +22,5 @@ public class Status {
     private Long id;
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "board_id")
-    Board board;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
