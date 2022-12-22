@@ -47,7 +47,7 @@ public class Item {
     private int importance;
     private String title;
     private String description;
-    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany
     private Set<Comment> comments;
 
 
@@ -63,5 +63,8 @@ public class Item {
         this.title = title;
         this.description = description;
         this.comments=new HashSet<>();
+    }
+    public void addComment(Comment comment){
+        comments.add(comment);
     }
 }

@@ -4,19 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
-import projectManagement.dto.ItemDto;
-import projectManagement.dto.UpdateItemDto;
-import projectManagement.dto.UpdateItemStatusDto;
-import projectManagement.dto.UpdateItemTypeDto;
+import projectManagement.dto.*;
 import projectManagement.entities.Status;
 import projectManagement.entities.board.Board;
+import projectManagement.entities.item.Comment;
 import projectManagement.entities.item.Item;
 import projectManagement.entities.item.ItemType;
 import projectManagement.entities.user.User;
-import projectManagement.repository.BoardRepository;
-import projectManagement.repository.ItemRepository;
-import projectManagement.repository.TypeRepository;
-import projectManagement.repository.UserRepository;
+import projectManagement.repository.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +23,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
-    private final TypeRepository typeRepository;
+    private final CommentRepository commentRepository;
 
     private static Logger logger = LogManager.getLogger(ItemService.class);
 
@@ -76,6 +71,7 @@ public class ItemService {
         item.setStatus(status);
         return itemRepository.save(item);
     }
+
     public Item update(UpdateItemDto dto) throws IllegalArgumentException {
         Item item = itemRepository.findById(dto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("item does not exist"));
@@ -101,6 +97,14 @@ public class ItemService {
         item.setTitle(dto.getTitle());
         item.setImportance(dto.getImportance());
         item.setDueDate(dto.getDueDate());
+        return itemRepository.save(item);
+    }
+
+    public Item addComment(AddCommentDto dto, String userEmail) {
+        Item item = itemRepository.findById(dto.getItemId()).orElseThrow(() -> new IllegalArgumentException("item does not exist"));
+        User user = userRepository.findUserByEmail(userEmail);
+        Comment comment = commentRepository.save(new Comment(user, dto.getComment()));
+        item.addComment(comment);
         return itemRepository.save(item);
     }
 

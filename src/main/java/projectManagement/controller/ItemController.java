@@ -68,4 +68,16 @@ public class ItemController {
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
     }
+    @PatchMapping("/comment/add")
+    public ResponseEntity<BaseResponse> addComment(@RequestBody AddCommentDto dto, @RequestAttribute String userEmail) {
+        logger.info("in addComment(): ");
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new BaseResponse<>("Comment added successfully",
+                            itemService.addComment(dto, userEmail)));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new BaseResponse<>(e.getMessage(), dto));
+        }
+    }
 }
