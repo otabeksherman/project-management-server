@@ -19,7 +19,6 @@ import projectManagement.util.JwtUtils;
 import java.sql.SQLDataException;
 import java.util.Collections;
 import java.util.Set;
-
 import static projectManagement.util.MailUtil.sendMail;
 
 @Component
@@ -87,7 +86,7 @@ public class UserService implements UserDetailsService {
             return user.getNotifications();
         }
     }
-
+    
 }
 
 
