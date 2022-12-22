@@ -1,5 +1,6 @@
 package projectManagement.entities.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,8 +25,10 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String password;
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Board> boards;
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Notification> notifications;
     @Column(nullable = false)
@@ -38,6 +41,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.emailNotify = true;
+        this.popNotify = true;
         this.boards = new HashSet<>();
         this.notifications = new HashSet<>();
     }
@@ -47,6 +51,7 @@ public class User {
         this.email = email;
         this.password = email;
         this.emailNotify = true;
+        this.popNotify = true;
         this.boards = new HashSet<>();
         this.notifications = new HashSet<>();
     }

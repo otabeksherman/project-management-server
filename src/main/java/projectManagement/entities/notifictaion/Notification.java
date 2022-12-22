@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import projectManagement.entities.board.Board;
-import projectManagement.entities.item.Item;
 import projectManagement.entities.user.User;
 
 import javax.persistence.*;
@@ -33,6 +32,8 @@ public class Notification {
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
     private LocalDate date;
+
+    @Column(nullable = false)
     private NotificationType notificationType;
 
     public static class Builder {
@@ -82,5 +83,4 @@ public class Notification {
         this.date = builder.date;
         this.notificationType = builder.notificationType;
     }
-
 }

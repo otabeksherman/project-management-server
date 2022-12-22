@@ -22,9 +22,19 @@ public class NotificationService {
 
     private final UserRepository userRepository;
 
+    /**
+     * the function get notification details, create notification, load it to user notification list.
+     *
+     * @param emailUser
+     * @param emailAssigner
+     * @param board
+     * @param notificationtype
+     * @return
+     * @throws Exception
+     * @throws SQLDataException
+     */
     public void addNotification(String emailUser, String emailAssigner, Board board, NotificationType notificationtype) throws Exception, SQLDataException {
         logger.info("in addNotification(): ");
-        //TODO: handle exception (Sql exception)
         if (userRepository.findUserByEmail(emailUser) == null && userRepository.findUserByEmail(emailAssigner) == null) {
             throw new SQLDataException(String.format("Email %s is not exists in users table", emailUser));
         } else {
@@ -49,18 +59,20 @@ public class NotificationService {
     }
 
     private void sendNotification(User user, String emailAssigner, Notification notification) throws Exception {
-        if (user.getEmailNotify()) {
-            String subject = "Project Management-email notification";
-            String message = "notification from user: " + emailAssigner +
-                    "notification: " + notification.getNotificationType().getText();//TODO: change the message
-            try {
-                sendMail(user.getEmail(), subject, message);
-            } catch (Exception e) {
-                throw new Exception("Unable to send mail");
+        if (notification.getNotificationType().isTypeActive()) {
+            if (user.getEmailNotify()) {
+                String subject = "Project Management-email notification";
+                String message = "notification from user: " + emailAssigner +
+                        "notification: " + notification.getNotificationType().getText();//TODO: change the message
+                try {
+                    sendMail(user.getEmail(), subject, message);
+                } catch (Exception e) {
+                    throw new Exception("Unable to send mail");
+                }
             }
-        }
-        if (user.getPopNotify()) {
-            //TODO: implement return to client with socket/sse
+            if (user.getPopNotify()) {
+                //TODO: popup notification
+            }
         }
     }
 
