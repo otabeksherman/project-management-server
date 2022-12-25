@@ -12,13 +12,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
 import projectManagement.dto.AuthenticationRequest;
 import projectManagement.dto.BaseResponse;
 import projectManagement.service.UserService;
 import projectManagement.util.JwtUtils;
-
-import java.net.URI;
 
 import static projectManagement.util.GitAuthUtil.*;
 
@@ -51,6 +48,15 @@ public class AuthenticationController {
         return ResponseEntity.ok(new BaseResponse<>("Success", jwtUtils.generateToken(user)));
     }
 
+    /**
+     * make gt request with getEmailFromGit function
+     * then check if user already signup with this email (regular register),
+     * if false- check if user already signup with git.
+     * if true- login, else- signup and login.
+     *
+     * @param code
+     * @return user email
+     */
     @GetMapping("/github")
     public ResponseEntity<BaseResponse> authWithGit(@RequestParam String code) {
         logger.info("in authWithGit(): ");
@@ -60,9 +66,9 @@ public class AuthenticationController {
 
             if (userService.emailExists(email)) {
                 user = userService.loadUserByUsername(email);
-                if(!userService.isGithubAccount(user.getUsername())){
+                if (!userService.isGithubAccount(user.getUsername())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                            new BaseResponse<>("Failed- user register already without github",user.getUsername()));
+                            new BaseResponse<>("Failed- user register already without github", user.getUsername()));
                 }
             } else {
                 user = userService.loadUserByUsername(userService.registerWithGit(email).getEmail());

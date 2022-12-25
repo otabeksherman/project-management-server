@@ -9,8 +9,4 @@ public class GitEmailResponse {
     public String getEmail() {
         return email;
     }
-
-    public boolean getPrimary() {
-        return primary;
-    }
 }
