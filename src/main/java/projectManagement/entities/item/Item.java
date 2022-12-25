@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import projectManagement.entities.Status;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.user.User;
 
@@ -22,12 +21,14 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "type_id")
-    private ItemType type;
-    @ManyToOne
-    @JoinColumn(name = "status_id")
-    private Status status;
+//    @ManyToOne
+//    @JoinColumn(name = "type_id")
+//    private ItemType type;
+//    @ManyToOne
+//    @JoinColumn(name = "status_id")
+//    private Status status;
+    private String type;
+    private String status;
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "parent_item_id")
     @JsonIgnore
@@ -47,11 +48,11 @@ public class Item {
     private int importance;
     private String title;
     private String description;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Comment> comments;
 
 
-    public Item(ItemType type, Status status, Item parent, Board board, User creator, User assignedTo, Date dueDate, int importance, String title, String description) {
+    public Item(String type, String status, Item parent, Board board, User creator, User assignedTo, Date dueDate, int importance, String title, String description) {
         this.type = type;
         this.status = status;
         this.parent = parent;

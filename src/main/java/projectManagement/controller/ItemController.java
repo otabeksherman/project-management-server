@@ -32,6 +32,19 @@ public class ItemController {
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
     }
+    @DeleteMapping("/delete")
+    public ResponseEntity<BaseResponse> delete(@RequestBody DeleteItemDto dto, @RequestAttribute String userEmail) {
+        logger.info("in delete(): ");
+        try {
+            itemService.delete(dto);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new BaseResponse<>("item deleted successfully",
+                            dto.getItemId()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new BaseResponse<>(e.getMessage(), dto));
+        }
+    }
     @PatchMapping("/update")
     public ResponseEntity<BaseResponse> update(@RequestBody UpdateItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in update(): ");
@@ -80,4 +93,5 @@ public class ItemController {
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
     }
+
 }
