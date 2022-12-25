@@ -36,38 +36,23 @@ public class UserController {
     }
 
     /**
-     * get boolean notify, change to active/ unactive notifyByPopup user's setting.
-     *
-     * @param notify
-     * @param userEmail
-     * @return
-     */
-    @PostMapping("/notifyByPopup")
-    public ResponseEntity<BaseResponse> updateNotifyByPopup(@RequestParam boolean notify, @RequestAttribute String userEmail) {
-        logger.info("in updateNotifyByPopup(): ");
-        try {
-            return ResponseEntity.ok(new BaseResponse<>("Email notify updated", userService.notifyByPopup(userEmail, notify).getEmail()));
-        } catch (SQLDataException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
-        }
-    }
-
-    /**
-     * get boolean notify, change to active/ unactive notifyByEmail user's setting.
+     * get boolean notify, change to active/ unactive notifyBy Email/Popup user's setting.
      * if notify is true- also send first notify email.
      *
      * @param notify
      * @return BaseResponse with user's email.
      */
-    @PostMapping("/notifyByEmail")
-    public ResponseEntity<BaseResponse> updateNotifyByEmail(@RequestParam boolean notify, @RequestAttribute String userEmail) {
+    @PatchMapping("/updateNotifyBy")
+    public ResponseEntity<BaseResponse> updateNotifyBy(@RequestParam boolean notify, @RequestParam String type,@RequestAttribute String userEmail) {
         logger.info("in notifyByEmail(): ");
         try {
-            return ResponseEntity.ok(new BaseResponse<>("Email notify updated", userService.notifyByEmail(userEmail, notify).getEmail()));
+            return ResponseEntity.ok(new BaseResponse<>("notify by "+type+" updated", userService.updateNotifyBy(userEmail, notify, type).getEmail()));
         } catch (SQLDataException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Unable to send mail", null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", userEmail));
+        }catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("type %s is not exist", type));
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Unable to send mail", userEmail));
         }
     }
 

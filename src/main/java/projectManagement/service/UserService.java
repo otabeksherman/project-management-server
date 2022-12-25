@@ -61,21 +61,29 @@ public class UserService implements UserDetailsService {
         return (userRepository.findUserByEmail(email) != null);
     }
 
-    public User notifyByEmail(String email, boolean notify) throws Exception {
+    public User updateNotifyBy(String email, boolean notify, String type) throws Exception ,IllegalArgumentException{
         User user;
         if (userRepository.findUserByEmail(email) == null) {
             throw new SQLDataException(String.format("Email %s is not exists in users table", email));
         } else {
             user = userRepository.findUserByEmail(email);
-            user.setEmailNotify(notify);
-            if (notify == true) {
-                String subject = "email notification";
-                String message = "Email notifications have been updated to active. From now on you will start receiving updates by email";
-                try {
-                    sendMail(email, subject, message);
-                } catch (IllegalArgumentException e) {
-                    throw new Exception(String.format("failed to send email: ", email));
+            if(type.equals("popup")){
+                user.setPopNotify(notify);
+            } else if( type.equals("email")) {
+                user.setEmailNotify(notify);
+
+                //send first email about update state to active
+                if (notify == true) {
+                    String subject = "email notification";
+                    String message = "Email notifications have been updated to active. From now on you will start receiving updates by email";
+                    try {
+                        sendMail(email, subject, message);
+                    } catch (IllegalArgumentException e) {
+                        throw new Exception(String.format("failed to send email: ", email));
+                    }
                 }
+            }else{
+                throw new IllegalArgumentException(String.format("type %s is not exist", type));
             }
         }
         return userRepository.save(user);
