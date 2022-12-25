@@ -48,7 +48,7 @@ public class NotificationService {
             user.addNotifications(notification);
             userRepository.save(user);
 
-            if (notification.getNotificationType().isTypeActive()) {
+            if (user.getNotificationTypeSettings().get(notification.getNotificationType())) {
                 try {
                     sendNotification(user, emailAssigner, notification);
                 } catch (Exception e) {
@@ -59,7 +59,7 @@ public class NotificationService {
     }
 
     private void sendNotification(User user, String emailAssigner, Notification notification) throws Exception {
-        if (notification.getNotificationType().isTypeActive()) {
+        if (user.getNotificationTypeSettings().get(notification.getNotificationType())) {
             if (user.getEmailNotify()) {
                 String subject = "Project Management-email notification";
                 String message = "notification from user: " + emailAssigner +

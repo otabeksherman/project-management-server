@@ -36,13 +36,30 @@ public class UserController {
     }
 
     /**
-     * get token and boolean notify, change to active/ unactive notifyByEmail user's setting.
+     * get boolean notify, change to active/ unactive notifyByPopup user's setting.
+     *
+     * @param notify
+     * @param userEmail
+     * @return
+     */
+    @PostMapping("/notifyByPopup")
+    public ResponseEntity<BaseResponse> updateNotifyByPopup(@RequestParam boolean notify, @RequestAttribute String userEmail) {
+        logger.info("in updateNotifyByPopup(): ");
+        try {
+            return ResponseEntity.ok(new BaseResponse<>("Email notify updated", userService.notifyByPopup(userEmail, notify).getEmail()));
+        } catch (SQLDataException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
+        }
+    }
+
+    /**
+     * get boolean notify, change to active/ unactive notifyByEmail user's setting.
      * if notify is true- also send first notify email.
      *
      * @param notify
      * @return BaseResponse with user's email.
      */
-    @PostMapping("/notify")
+    @PostMapping("/notifyByEmail")
     public ResponseEntity<BaseResponse> updateNotifyByEmail(@RequestParam boolean notify, @RequestAttribute String userEmail) {
         logger.info("in notifyByEmail(): ");
         try {
@@ -63,6 +80,24 @@ public class UserController {
             return ResponseEntity.ok(new BaseResponse<>("User notification list", userService.getUserNotification(userEmail)));
         } catch (SQLDataException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
+        }
+    }
+
+    /**
+     * get user and notification type setting, and update user setting.
+     * @param userEmail
+     * @param notificationType
+     * @param update
+     * @return
+     */
+    @PostMapping("/updateNotificationType")
+    public ResponseEntity<BaseResponse> updateNotificationTypeSettings(@RequestAttribute String userEmail,@RequestParam String notificationType,@RequestParam Boolean update) {
+        try {
+            return ResponseEntity.ok(new BaseResponse<>("updateNotificationTypeSettings", userService.updateNotificationTypeSettings(userEmail, notificationType, update)));
+        } catch (SQLDataException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("notification type %s is not exists", notificationType));
         }
     }
 }

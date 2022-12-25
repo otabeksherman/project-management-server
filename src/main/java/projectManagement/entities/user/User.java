@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.notifictaion.Notification;
+import projectManagement.entities.notifictaion.NotificationType;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @NoArgsConstructor
 @Getter
@@ -36,6 +36,13 @@ public class User {
     @Column(nullable = false)
     private Boolean popNotify;
 
+    @ElementCollection
+    @CollectionTable(name="notification_type")
+    @MapKeyEnumerated(EnumType.STRING)
+    @MapKeyColumn
+    @Column
+    private Map<NotificationType,Boolean> notificationTypeSettings;
+
     public User(String email, String password) {
         this.githubAccount = false;
         this.email = email;
@@ -44,16 +51,22 @@ public class User {
         this.popNotify = true;
         this.boards = new HashSet<>();
         this.notifications = new HashSet<>();
+        initNotifications();
     }
 
     public User(String email) {
-        this.githubAccount = true;
-        this.email = email;
-        this.password = email;
-        this.emailNotify = true;
-        this.popNotify = true;
-        this.boards = new HashSet<>();
-        this.notifications = new HashSet<>();
+        this(email,email);
+    }
+
+    private void initNotifications(){
+        notificationTypeSettings= new EnumMap<NotificationType,Boolean>(NotificationType.class);
+        for(NotificationType notification: NotificationType.values()){
+            notificationTypeSettings.put(notification,true);
+        }
+    }
+
+    public void updateNotificationTypeSetting(NotificationType notificationType, Boolean update){
+        notificationTypeSettings.put(notificationType,update);
     }
 
     public boolean isGithubAccount() {

@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import projectManagement.dto.RegistrationDto;
 import projectManagement.entities.notifictaion.Notification;
+import projectManagement.entities.notifictaion.NotificationType;
 import projectManagement.entities.user.User;
 import projectManagement.repository.UserRepository;
 import projectManagement.util.JwtUtils;
@@ -71,10 +72,21 @@ public class UserService implements UserDetailsService {
                 String message = "Email notifications have been updated to active. From now on you will start receiving updates by email";
                 try {
                     sendMail(email, subject, message);
-                } catch (Exception e) {
+                } catch (IllegalArgumentException e) {
                     throw new Exception(String.format("failed to send email: ", email));
                 }
             }
+        }
+        return userRepository.save(user);
+    }
+
+    public User notifyByPopup(String email, boolean notify) throws SQLDataException {
+        User user;
+        if (userRepository.findUserByEmail(email) == null) {
+            throw new SQLDataException(String.format("Email %s is not exists in users table", email));
+        } else {
+            user = userRepository.findUserByEmail(email);
+            user.setPopNotify(notify);
         }
         return userRepository.save(user);
     }
@@ -86,6 +98,23 @@ public class UserService implements UserDetailsService {
             User user = userRepository.findUserByEmail(email);
             return user.getNotifications();
         }
+    }
+
+    public User updateNotificationTypeSettings(String email, String notificationTypeStr, Boolean update) throws SQLDataException, IllegalArgumentException {
+        User user;
+        if (userRepository.findUserByEmail(email) == null) {
+            throw new SQLDataException(String.format("Email %s is not exists in users table", email));
+        } else {
+            NotificationType notificationType;
+            try {
+                notificationType = NotificationType.valueOf(notificationTypeStr);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(String.format("notification type %s is not exists", notificationTypeStr));
+            }
+            user = userRepository.findUserByEmail(email);
+            user.updateNotificationTypeSetting(notificationType, update);
+        }
+        return userRepository.save(user);
     }
 
 }

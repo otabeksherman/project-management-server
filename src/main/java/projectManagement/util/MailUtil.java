@@ -13,7 +13,13 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
+import org.hibernate.cfg.Environment;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -27,9 +33,18 @@ import java.util.Set;
 import static com.google.api.services.gmail.GmailScopes.GMAIL_SEND;
 import static javax.mail.Message.RecipientType.TO;
 
+@Component
+@PropertySource("classpath:application.properties")
 public class MailUtil {
+    @Value("${gmail.fromEmail}")
+    private String email;
 
-    private static final String FROM_EMAIL = "tbz1996@gmail.com";
+    private static String FROM_EMAIL;
+
+    @Value("${gmail.fromEmail}")
+    public void setFromEmailStatic(String email){
+        MailUtil.FROM_EMAIL=email;
+    }
 
     private static Gmail init() throws Exception {
         NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
@@ -44,7 +59,7 @@ public class MailUtil {
     private static Credential getCredentials(final NetHttpTransport httpTransport, GsonFactory jsonFactory)
             throws IOException {
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(MailUtil.class
-                .getResourceAsStream("/client_secret_832098226915-qg699ff2itjs5q3hlifomniigbf3jhpv.apps.googleusercontent.com.json")));
+                .getResourceAsStream("/credentials.json")));
 
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                 httpTransport, jsonFactory, clientSecrets, Set.of(GMAIL_SEND))
