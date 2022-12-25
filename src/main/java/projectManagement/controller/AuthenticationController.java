@@ -12,13 +12,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
 import projectManagement.dto.AuthenticationRequest;
 import projectManagement.dto.BaseResponse;
 import projectManagement.service.UserService;
 import projectManagement.util.JwtUtils;
-
-import java.net.URI;
 
 import static projectManagement.util.GitAuthUtil.*;
 
