@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import projectManagement.dto.RegistrationDto;
 import projectManagement.entities.notifictaion.Notification;
 import projectManagement.entities.notifictaion.NotificationType;
@@ -23,7 +24,7 @@ import java.util.Set;
 
 import static projectManagement.util.MailUtil.sendMail;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private static Logger logger = LogManager.getLogger(UserService.class);

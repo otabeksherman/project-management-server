@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.notifictaion.Notification;
 import projectManagement.entities.notifictaion.NotificationType;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 
 import static projectManagement.util.MailUtil.sendMail;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class NotificationService {
     private static Logger logger = LogManager.getLogger(NotificationService.class);

@@ -25,10 +25,8 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String password;
-    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Board> boards;
-    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Notification> notifications;
     @Column(nullable = false)
