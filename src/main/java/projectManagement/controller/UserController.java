@@ -75,7 +75,7 @@ public class UserController {
      * @param update
      * @return
      */
-    @PostMapping("/updateNotificationType")
+    @PatchMapping("/updateNotificationType")
     public ResponseEntity<BaseResponse> updateNotificationTypeSettings(@RequestAttribute String userEmail,@RequestParam String notificationType,@RequestParam Boolean update) {
         try {
             return ResponseEntity.ok(new BaseResponse<>("updateNotificationTypeSettings", userService.updateNotificationTypeSettings(userEmail, notificationType, update)));
