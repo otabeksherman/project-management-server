@@ -17,7 +17,7 @@ import projectManagement.dto.BaseResponse;
 import projectManagement.service.UserService;
 import projectManagement.util.JwtUtils;
 
-import static projectManagement.util.GitAuthUtil.getEmailFromGit;
+import static projectManagement.util.GitAuthUtil.*;
 
 @Controller
 @CrossOrigin

@@ -1,5 +1,6 @@
 package projectManagement.entities.item;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class ItemType {
     private String name;
     @ManyToOne
     @JoinColumn(name = "board_id")
+    @JsonIgnore
     private Board board;
 
     public String getName() {
