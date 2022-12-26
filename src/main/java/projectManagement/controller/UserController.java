@@ -90,12 +90,26 @@ public class UserController {
     /**
      * get user notification type setting (map of type and boolean)
      * @param userEmail
-     * @return
+     * @return map<type, boolean>
      */
     @GetMapping("/getUserNotificationType")
     public ResponseEntity<BaseResponse> getUserNotificationTypeNotification(@RequestAttribute String userEmail) {
         try {
             return ResponseEntity.ok(new BaseResponse<>("User notification type:", userService.getUserNotificationTypeNotification(userEmail)));
+        } catch (SQLDataException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
+        }
+    }
+
+    /**
+     * return notification by setting (is email and popup are active)
+     * @param userEmail
+     * @return map <string (email/popup), boolean>
+     */
+    @GetMapping("/getUserNotificationBySettings")
+    public ResponseEntity<BaseResponse> getUserNotificationBySettings(@RequestAttribute String userEmail) {
+        try {
+            return ResponseEntity.ok(new BaseResponse<>("User notification by settings:", userService.getUserNotificationBySettings(userEmail)));
         } catch (SQLDataException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
         }

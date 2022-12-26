@@ -20,6 +20,7 @@ import projectManagement.util.JwtUtils;
 
 import java.sql.SQLDataException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -116,6 +117,18 @@ public class UserService implements UserDetailsService {
         } else {
             User user = userRepository.findUserByEmail(email);
             return user.getNotificationTypeSettings();
+        }
+    }
+
+    public Map<String, Boolean>  getUserNotificationBySettings(String email) throws SQLDataException {
+        if (userRepository.findUserByEmail(email) == null) {
+            throw new SQLDataException(String.format("Email %s is not exists in users table", email));
+        } else {
+            User user = userRepository.findUserByEmail(email);
+            Map<String,Boolean> notificationBySettings= new HashMap<>();
+            notificationBySettings.put("email",user.getEmailNotify());
+            notificationBySettings.put("popup", user.getPopNotify());
+            return notificationBySettings;
         }
     }
 
