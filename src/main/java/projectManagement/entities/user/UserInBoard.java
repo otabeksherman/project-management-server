@@ -36,4 +36,11 @@ public class UserInBoard {
     @Column(name = "role")
     @Cascade(CascadeType.ALL)
     private UserRole role;
+
+    public UserInBoard(Board board, User user, UserRole role) {
+        this();
+        this.board = board;
+        this.user = user;
+        this.role = role;
+    }
 }
