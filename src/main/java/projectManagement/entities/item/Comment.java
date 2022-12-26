@@ -22,9 +22,9 @@ public class Comment {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "item_id", nullable = false)
-    private Item item;
+//    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+//    @JoinColumn(name = "item_id", nullable = false)
+//    private Item item;
     private String content;
     private LocalDate date;
 

@@ -7,9 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import projectManagement.entities.Status;
 import projectManagement.entities.item.Item;
-import projectManagement.entities.item.ItemType;
 import projectManagement.entities.user.User;
 
 import javax.persistence.*;
@@ -27,11 +25,12 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     String name;
-    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<ItemType> types;
-    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<Status> statuses;
-
+    @Column
+    @ElementCollection(targetClass=String.class)
+    Set<String> types;
+    @Column
+    @ElementCollection(targetClass=String.class)
+    Set<String> statuses;
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
@@ -39,10 +38,6 @@ public class Board {
 
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Item> items;
-
-    public void addType(ItemType type) {
-        types.add(type);
-    }
 
 
 }

@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import projectManagement.entities.Status;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.user.User;
 
@@ -24,12 +23,14 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "type_id")
-    private ItemType type;
-    @ManyToOne
-    @JoinColumn(name = "status_id")
-    private Status status;
+//    @ManyToOne
+//    @JoinColumn(name = "type_id")
+//    private ItemType type;
+//    @ManyToOne
+//    @JoinColumn(name = "status_id")
+//    private Status status;
+    private String type;
+    private String status;
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "parent_item_id")
     @JsonIgnore
@@ -42,26 +43,31 @@ public class Item {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User creator;
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "assigned_to_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "assigned_to_id")
     private User assignedTo;
     private Date dueDate;
     private int importance;
     private String title;
     private String description;
-    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Comment> comments;
 
 
-    public Item(ItemType type, Item parent, User creator, User assignedTo, Date dueDate, int importance, String title, String description) {
+    public Item(String type, String status, Item parent, Board board, User creator, User assignedTo, Date dueDate, int importance, String title, String description) {
         this.type = type;
+        this.status = status;
         this.parent = parent;
+        this.board = board;
         this.creator = creator;
-        this.assignedTo = assignedTo;
+        this.assignedTo=assignedTo;
         this.dueDate = dueDate;
         this.importance = importance;
         this.title = title;
         this.description = description;
-        this.comments = new HashSet<>();
+        this.comments=new HashSet<>();
+    }
+    public void addComment(Comment comment){
+        comments.add(comment);
     }
 }
