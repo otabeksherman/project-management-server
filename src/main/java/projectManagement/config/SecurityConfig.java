@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import projectManagement.filter.JwtAuthFilter;
+import projectManagement.filter.RolesFilter;
 import projectManagement.service.UserService;
 
 
@@ -23,6 +24,7 @@ import projectManagement.service.UserService;
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final UserService userDetailsService;
+    private RolesFilter rolesFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,6 +40,7 @@ public class SecurityConfig {
                 .and()
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilter(rolesFilter)
                 .csrf().disable().cors();
         return http.build();
     }

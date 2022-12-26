@@ -39,70 +39,62 @@ public class PermissionService {
      */
     public boolean isAuthorized(Long boardId, String userEmail, Operation operation) {
         logger.info("in isAuthorized():");
-        List<UserInBoard> boardUsers = userInBoardRepository.findByBoardAndUser(boardId, userEmail); //get the users of the board
+        UserInBoard boardUser = userInBoardRepository.findByBoardAndUser(boardId, userEmail);
 
-        if (boardUsers.isEmpty()) {
+        if (boardUser == null) {
             return false;
         }
+        UserRole userRole = boardUser.getRole();
 
         List<UserRole> usersRoleInBoard = operation.getUserRole(); //get the allows roles for this operation
-        User user = userRepository.findUserByEmail(userEmail);
 
-        if (boardUsers.contains(user)) {
-            UserRole userRole = boardUsers.get(boardUsers.indexOf(user)).getRole(); //check the role of the user on the board
-            return (usersRoleInBoard.contains(userRole));
-        }
-        return false;
+        return ((usersRoleInBoard.contains(userRole)));
     }
 
     /**
      * add/change role to user to board
+     *
      * @param boardId
      * @param userEmail
      * @param role
      */
     public void updateUserRole(Long boardId, String userEmail, UserRole role) {
         logger.info("in updateUserRole():");
-
-        List<UserInBoard> boardUsers = userInBoardRepository.findByBoardAndUser(boardId, userEmail); //get the users of the board
-        User user = userRepository.findUserByEmail(userEmail);
-        if (boardUsers.contains(user)) {//the user already exist on the board- only update role
-            UserInBoard userOnBoard = boardUsers.get(boardUsers.indexOf(user));
-            userOnBoard.setRole(role);
-            userInBoardRepository.save(userOnBoard);
-        } else {
+        UserInBoard boardUser = userInBoardRepository.findByBoardAndUser(boardId, userEmail);
+        if (boardUser == null) {
             addUserRole(boardId, userEmail, role);
+        } else {
+            boardUser.setRole(role);
+            userInBoardRepository.save(boardUser);
         }
     }
 
     /**
      * add role to user to board
+     *
      * @param boardId
      * @param userEmail
      * @param role
      */
     public void addUserRole(Long boardId, String userEmail, UserRole role) {
         logger.info("in addUserRole():");
-        Board board= boardRepository.getReferenceById(boardId);
-        User user= userRepository.findUserByEmail(userEmail);
-        UserInBoard userInBoard= new UserInBoard(board,user,role);
+        Board board = boardRepository.getReferenceById(boardId);
+        User user = userRepository.findUserByEmail(userEmail);
+        UserInBoard userInBoard = new UserInBoard(board, user, role);
         userInBoardRepository.save(userInBoard);
     }
 
     /**
      * delete role to user to board
+     *
      * @param boardId
      * @param userEmail
      * @param role
      */
     public void deleteUerRole(Long boardId, String userEmail, UserRole role) {
-        List<UserInBoard> boardUsers = userInBoardRepository.findByBoardAndUser(boardId, userEmail); //get the users of the board
-        User user = userRepository.findUserByEmail(userEmail);
-        if (boardUsers.contains(user)) {//only if the user is in the board's user
-            UserInBoard userOnBoard = boardUsers.get(boardUsers.indexOf(user));
-            userInBoardRepository.delete(userOnBoard);
+        UserInBoard boardUser = userInBoardRepository.findByBoardAndUser(boardId, userEmail);
+        if (boardUser != null) {
+            userInBoardRepository.delete(boardUser);
         }
     }
-
-
 }

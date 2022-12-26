@@ -9,7 +9,7 @@ import java.util.List;
 public enum Operation {
     //Board operations:
     SHARE_BOARD(Arrays.asList(UserRole.ADMIN)),
-    CREATE_BOARD(Arrays.asList(UserRole.ADMIN)),
+    CREATE_BOARD(Arrays.asList(UserRole.ADMIN, UserRole.LEADER, UserRole.USER)),
 
     //Status operations:
     ADD_STATUS(Arrays.asList(UserRole.ADMIN)),
@@ -31,7 +31,6 @@ public enum Operation {
     private List<UserRole> userRole;
 
     Operation(List<UserRole> userRoleList) {
-        userRole= new ArrayList<>();
         this.userRole = userRoleList;
     }
 
