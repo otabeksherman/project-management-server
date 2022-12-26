@@ -43,15 +43,15 @@ public class UserController {
      * @return BaseResponse with user's email.
      */
     @PatchMapping("/updateNotifyBy")
-    public ResponseEntity<BaseResponse> updateNotifyBy(@RequestParam boolean notify, @RequestParam String type,@RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse> updateNotifyBy(@RequestParam boolean notify, @RequestParam String type, @RequestAttribute String userEmail) {
         logger.info("in notifyByEmail(): ");
         try {
-            return ResponseEntity.ok(new BaseResponse<>("notify by "+type+" updated", userService.updateNotifyBy(userEmail, notify, type).getEmail()));
+            return ResponseEntity.ok(new BaseResponse<>("notify by " + type + " updated", userService.updateNotifyBy(userEmail, notify, type).getEmail()));
         } catch (SQLDataException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", userEmail));
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("type %s is not exist", type));
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Unable to send mail", userEmail));
         }
     }
@@ -70,19 +70,34 @@ public class UserController {
 
     /**
      * get user and notification type setting, and update user setting.
+     *
      * @param userEmail
      * @param notificationType
      * @param update
      * @return
      */
     @PatchMapping("/updateNotificationType")
-    public ResponseEntity<BaseResponse> updateNotificationTypeSettings(@RequestAttribute String userEmail,@RequestParam String notificationType,@RequestParam Boolean update) {
+    public ResponseEntity<BaseResponse> updateNotificationTypeSettings(@RequestAttribute String userEmail, @RequestParam String notificationType, @RequestParam Boolean update) {
         try {
             return ResponseEntity.ok(new BaseResponse<>("updateNotificationTypeSettings", userService.updateNotificationTypeSettings(userEmail, notificationType, update)));
         } catch (SQLDataException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("notification type %s is not exists", notificationType));
+        }
+    }
+
+    /**
+     * get user notification type setting (map of type and boolean)
+     * @param userEmail
+     * @return
+     */
+    @GetMapping("/getUserNotificationType")
+    public ResponseEntity<BaseResponse> getUserNotificationTypeNotification(@RequestAttribute String userEmail) {
+        try {
+            return ResponseEntity.ok(new BaseResponse<>("User notification type:", userService.getUserNotificationTypeNotification(userEmail)));
+        } catch (SQLDataException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
         }
     }
 }

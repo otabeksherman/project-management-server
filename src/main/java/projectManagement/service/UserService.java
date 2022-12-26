@@ -20,6 +20,7 @@ import projectManagement.util.JwtUtils;
 
 import java.sql.SQLDataException;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import static projectManagement.util.MailUtil.sendMail;
@@ -106,6 +107,15 @@ public class UserService implements UserDetailsService {
         } else {
             User user = userRepository.findUserByEmail(email);
             return user.getNotifications();
+        }
+    }
+
+    public Map<NotificationType,Boolean>  getUserNotificationTypeNotification(String email) throws SQLDataException {
+        if (userRepository.findUserByEmail(email) == null) {
+            throw new SQLDataException(String.format("Email %s is not exists in users table", email));
+        } else {
+            User user = userRepository.findUserByEmail(email);
+            return user.getNotificationTypeSettings();
         }
     }
 
