@@ -20,6 +20,8 @@ import projectManagement.util.JwtUtils;
 
 import java.sql.SQLDataException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import static projectManagement.util.MailUtil.sendMail;
@@ -61,21 +63,29 @@ public class UserService implements UserDetailsService {
         return (userRepository.findUserByEmail(email) != null);
     }
 
-    public User notifyByEmail(String email, boolean notify) throws Exception {
+    public User updateNotifyBy(String email, boolean notify, String type) throws Exception ,IllegalArgumentException{
         User user;
         if (userRepository.findUserByEmail(email) == null) {
             throw new SQLDataException(String.format("Email %s is not exists in users table", email));
         } else {
             user = userRepository.findUserByEmail(email);
-            user.setEmailNotify(notify);
-            if (notify == true) {
-                String subject = "email notification";
-                String message = "Email notifications have been updated to active. From now on you will start receiving updates by email";
-                try {
-                    sendMail(email, subject, message);
-                } catch (IllegalArgumentException e) {
-                    throw new Exception(String.format("failed to send email: ", email));
+            if(type.equals("popup")){
+                user.setPopNotify(notify);
+            } else if( type.equals("email")) {
+                user.setEmailNotify(notify);
+
+                //send first email about update state to active
+                if (notify == true) {
+                    String subject = "email notification";
+                    String message = "Email notifications have been updated to active. From now on you will start receiving updates by email";
+                    try {
+                        sendMail(email, subject, message);
+                    } catch (IllegalArgumentException e) {
+                        throw new Exception(String.format("failed to send email: ", email));
+                    }
                 }
+            }else{
+                throw new IllegalArgumentException(String.format("type %s is not exist", type));
             }
         }
         return userRepository.save(user);
@@ -98,6 +108,27 @@ public class UserService implements UserDetailsService {
         } else {
             User user = userRepository.findUserByEmail(email);
             return user.getNotifications();
+        }
+    }
+
+    public Map<NotificationType,Boolean>  getUserNotificationTypeNotification(String email) throws SQLDataException {
+        if (userRepository.findUserByEmail(email) == null) {
+            throw new SQLDataException(String.format("Email %s is not exists in users table", email));
+        } else {
+            User user = userRepository.findUserByEmail(email);
+            return user.getNotificationTypeSettings();
+        }
+    }
+
+    public Map<String, Boolean>  getUserNotificationBySettings(String email) throws SQLDataException {
+        if (userRepository.findUserByEmail(email) == null) {
+            throw new SQLDataException(String.format("Email %s is not exists in users table", email));
+        } else {
+            User user = userRepository.findUserByEmail(email);
+            Map<String,Boolean> notificationBySettings= new HashMap<>();
+            notificationBySettings.put("email",user.getEmailNotify());
+            notificationBySettings.put("popup", user.getPopNotify());
+            return notificationBySettings;
         }
     }
 
