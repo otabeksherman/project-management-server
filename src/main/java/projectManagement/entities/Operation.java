@@ -10,11 +10,8 @@ public enum Operation {
     //Board operations:
     SHARE_BOARD(Arrays.asList(UserRole.ADMIN)),
     CREATE_BOARD(Arrays.asList(UserRole.ADMIN, UserRole.LEADER, UserRole.USER)),
-
-    //Status operations:
     ADD_STATUS(Arrays.asList(UserRole.ADMIN)),
     REMOVE_STATUS(Arrays.asList(UserRole.ADMIN)),
-    UPDATE_ITEM_STATUS(Arrays.asList(UserRole.ADMIN, UserRole.LEADER, UserRole.USER)),
 
     //Item operations:
     CREATE_ITEM(Arrays.asList(UserRole.ADMIN)),
@@ -26,7 +23,8 @@ public enum Operation {
     ASSIGN_ITEM(Arrays.asList(UserRole.ADMIN)),
     ADD_ITEM_TYPE(Arrays.asList(UserRole.ADMIN)),
     REMOVE_ITEM_TYPE(Arrays.asList(UserRole.ADMIN)),
-    ADD_COMMENT(Arrays.asList(UserRole.USER));
+    ADD_COMMENT(Arrays.asList(UserRole.USER)),
+    UPDATE_ITEM_STATUS(Arrays.asList(UserRole.ADMIN, UserRole.LEADER, UserRole.USER));
 
     private List<UserRole> userRole;
 

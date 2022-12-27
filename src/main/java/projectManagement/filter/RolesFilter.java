@@ -31,27 +31,13 @@ public class RolesFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         logger.info("in doFilter():");
+        String path=((HttpServletRequest) request).getServletPath();
+        if ((path.contains("/item"))|| path.contains("/board")) {
 
-        if (((HttpServletRequest) request).getServletPath().contains("/registration")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        if (((HttpServletRequest) request).getServletPath().contains("/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+            MutableHttpServletRequest req = new MutableHttpServletRequest((HttpServletRequest) request);
+            HttpServletResponse res = (HttpServletResponse) response;
 
-
-        MutableHttpServletRequest req = new MutableHttpServletRequest((HttpServletRequest) request);
-        HttpServletResponse res = (HttpServletResponse) response;
-
-        final String userEmail = req.getAttribute("userEmail").toString();
-
-        //check permission to create item
-        if (((HttpServletRequest) request).getServletPath().endsWith("/item/create")) {
-            Operation operation = Operation.CREATE_ITEM;
-            logger.info("user: " + userEmail + "  to: " + operation);
-
+            final String userEmail = req.getAttribute("userEmail").toString();
             String body = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
 
             try {
@@ -60,7 +46,7 @@ public class RolesFilter extends OncePerRequestFilter {
                 request.setAttribute("dto", dto);
 
                 Long boardId = jsonObject.getLong("boardId");
-                if (permissionService.isAuthorized(boardId, userEmail, operation)) {
+                if (permissionService.isAuthorized(boardId, userEmail, path)) {
                     filterChain.doFilter(request, response);
                 } else {
                     res.sendError(401, "User does not have permission to create item");
@@ -69,6 +55,11 @@ public class RolesFilter extends OncePerRequestFilter {
                 res.sendError(401, e.getMessage());
             }
         }
+        else{
+            filterChain.doFilter(request, response);
+            return;
+        }
+
     }
 }
 
