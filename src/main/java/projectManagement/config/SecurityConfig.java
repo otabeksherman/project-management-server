@@ -24,7 +24,7 @@ import projectManagement.service.UserService;
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final UserService userDetailsService;
-    private RolesFilter rolesFilter;
+    private final RolesFilter rolesFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .and()
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilter(rolesFilter)
+                .addFilterAfter(rolesFilter,jwtAuthFilter.getClass())//TODO: change the second param to right filter
                 .csrf().disable().cors();
         return http.build();
     }

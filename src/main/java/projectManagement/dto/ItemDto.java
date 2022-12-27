@@ -29,4 +29,5 @@ public class ItemDto {
     @NotNull
     @NotEmpty
     private String description;
+
 }
