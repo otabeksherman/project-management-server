@@ -18,7 +18,6 @@ import projectManagement.filter.JwtAuthFilter;
 import projectManagement.filter.RolesFilter;
 import projectManagement.service.UserService;
 
-
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -40,7 +39,7 @@ public class SecurityConfig {
                 .and()
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(rolesFilter,jwtAuthFilter.getClass())//TODO: change the second param to right filter
+                .addFilterAfter(rolesFilter, jwtAuthFilter.getClass())
                 .csrf().disable().cors();
         return http.build();
     }
