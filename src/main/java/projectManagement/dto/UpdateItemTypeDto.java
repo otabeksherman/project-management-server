@@ -14,4 +14,7 @@ public class UpdateItemTypeDto {
     @NotNull
     @NotEmpty
     private String type;
+    @NotNull
+    @NotEmpty
+    private Long boardId;
 }

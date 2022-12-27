@@ -1,7 +1,5 @@
 package projectManagement.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,9 +9,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import projectManagement.dto.*;
 import projectManagement.entities.item.Item;
+import projectManagement.service.EmitterService;
 import projectManagement.service.ItemService;
+import projectManagement.service.LiveNotificationService;
 
 import java.sql.SQLDataException;
+import java.util.Map;
 
 @Controller
 @CrossOrigin
@@ -21,29 +22,32 @@ import java.sql.SQLDataException;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private static Logger logger = LogManager.getLogger(ItemController.class);
-    //private static Gson gson = new GsonBuilder().create();
+    private final LiveNotificationService notificationService;
 
+    private static Logger logger = LogManager.getLogger(ItemController.class);
 
     @PostMapping("/create")
     public ResponseEntity<BaseResponse> create(@RequestBody ItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in create(): ");
-        //ItemDto dto=gson.fromJson(String.valueOf(body),ItemDto.class);
-
         try {
+            Item item = itemService.create(dto, userEmail);
+            notificationService.sendNotification(userEmail, dto.getBoardId(),
+                    new EventDto("CREATE", Map.of("ITEM", item)));
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new BaseResponse<>("Item created successfully",
-                            itemService.create(dto, userEmail)));
+                    .body(new BaseResponse<>("Item created successfully", item));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
     }
+
     @DeleteMapping("/delete")
     public ResponseEntity<BaseResponse> delete(@RequestBody DeleteItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in delete(): ");
         try {
             itemService.delete(dto);
+            notificationService.sendNotification(userEmail, dto.getBoardId(),
+                    new EventDto("DELETE", Map.of("ITEM", dto.getItemId())));
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new BaseResponse<>("item deleted successfully",
                             dto.getItemId()));
@@ -52,46 +56,59 @@ public class ItemController {
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
     }
+
     @PatchMapping("/update")
     public ResponseEntity<BaseResponse> update(@RequestBody UpdateItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in update(): ");
         try {
+            Item item = itemService.update(dto);
+            notificationService.sendNotification(userEmail, dto.getBoardId(),
+                    new EventDto("UPDATE", Map.of("ITEM", item)));
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new BaseResponse<>("Item updated successfully",
-                            itemService.update(dto)));
+                    .body(new BaseResponse<>("Item updated successfully", item));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
     }
+
     @PatchMapping("/type/update")
     public ResponseEntity<BaseResponse> updateType(@RequestBody UpdateItemTypeDto dto, @RequestAttribute String userEmail) {
         logger.info("in updateType(): ");
         try {
+            Item item = itemService.updateType(dto);
+            notificationService.sendNotification(userEmail, dto.getBoardId(),
+                    new EventDto("UPDATE", Map.of("ITEM_TYPE", item)));
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new BaseResponse<>("Item type updated successfully",
-                            itemService.updateType(dto)));
+                    .body(new BaseResponse<>("Item type updated successfully", item));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
     }
+
     @PatchMapping("/status/update")
     public ResponseEntity<BaseResponse> updateStatus(@RequestBody UpdateItemStatusDto dto, @RequestAttribute String userEmail) {
         logger.info("in updateStatus(): ");
         try {
+            Item item = itemService.updateStatus(dto);
+            notificationService.sendNotification(userEmail, dto.getBoardId(),
+                    new EventDto("UPDATE", Map.of("ITEM_STATUS", item)));
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new BaseResponse<>("Item status updated successfully",
-                            itemService.updateStatus(dto)));
+                    .body(new BaseResponse<>("Item status updated successfully", item));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
     }
+
     @PatchMapping("/comment/add")
     public ResponseEntity<BaseResponse> addComment(@RequestBody AddCommentDto dto, @RequestAttribute String userEmail) {
         logger.info("in addComment(): ");
         try {
+            Item item = itemService.addComment(dto, userEmail);
+            notificationService.sendNotification(userEmail, dto.getBoardId(),
+                    new EventDto("ADD", Map.of("COMMENT", item)));
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Comment added successfully",
                             itemService.addComment(dto, userEmail)));

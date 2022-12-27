@@ -13,7 +13,7 @@ public class EmitterService {
     private final EmitterRepository repository;
 
     public SseEmitter createEmitter(String memberId, Long boardId) {
-        SseEmitter emitter = new SseEmitter();
+        SseEmitter emitter = new SseEmitter(-1L);
         emitter.onCompletion(() -> repository.remove(memberId));
         emitter.onTimeout(emitter::complete);
         emitter.onError(e -> {
@@ -22,5 +22,4 @@ public class EmitterService {
         repository.addOrReplaceEmitter(memberId, boardId, emitter);
         return emitter;
     }
-
 }

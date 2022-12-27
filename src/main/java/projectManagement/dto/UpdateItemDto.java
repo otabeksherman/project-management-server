@@ -30,4 +30,7 @@ public class UpdateItemDto {
     @NotEmpty
     private String description;
     private List<Long> subItems;
+    @NotNull
+    @NotEmpty
+    private Long boardId;
 }
