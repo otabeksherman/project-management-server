@@ -100,5 +100,16 @@ public class ItemController {
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
     }
-
+    @GetMapping("/{id}/get/subitems")
+    public ResponseEntity<BaseResponse> getSubItems(@PathVariable Long id, @RequestAttribute String userEmail) {
+        logger.info("in getSubItems(): ");
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new BaseResponse<>("Success",
+                            itemService.getSubItems(id)));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new BaseResponse<>(e.getMessage(), id));
+        }
+    }
 }

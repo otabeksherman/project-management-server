@@ -6,6 +6,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,4 +29,5 @@ public class UpdateItemDto {
     @NotNull
     @NotEmpty
     private String description;
+    private List<Long> subItems;
 }
