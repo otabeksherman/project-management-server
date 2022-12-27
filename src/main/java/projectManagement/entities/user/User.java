@@ -25,6 +25,7 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String password;
+    @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<Board> boards;

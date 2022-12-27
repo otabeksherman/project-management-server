@@ -1,5 +1,7 @@
 package projectManagement.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import projectManagement.dto.*;
+import projectManagement.entities.item.Item;
 import projectManagement.service.ItemService;
 
 import java.sql.SQLDataException;
@@ -19,10 +22,14 @@ import java.sql.SQLDataException;
 public class ItemController {
     private final ItemService itemService;
     private static Logger logger = LogManager.getLogger(ItemController.class);
+    //private static Gson gson = new GsonBuilder().create();
+
 
     @PostMapping("/create")
-    public ResponseEntity<BaseResponse> create(@RequestBody ItemDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse> create(@RequestAttribute ItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in create(): ");
+        //ItemDto dto=gson.fromJson(String.valueOf(body),ItemDto.class);
+
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Item created successfully",
