@@ -11,6 +11,8 @@ import projectManagement.entities.item.Item;
 import projectManagement.entities.user.User;
 import projectManagement.repository.*;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +40,12 @@ public class ItemService {
             throw new IllegalArgumentException("illegal item status");
         }
         Item item = new Item(dto.getType(), dto.getStatus(), parentItem, board, creator, assignedTo, dto.getDueDate(), dto.getImportance(), dto.getTitle(), dto.getDescription());
-        return itemRepository.save(item);
+
+        Item savedItem = itemRepository.save(item);
+        if (!dto.getSubItems().isEmpty()) {
+            addSubItems(savedItem, dto.getSubItems());
+        }
+        return savedItem;
     }
 
     public Item updateType(UpdateItemTypeDto dto) throws IllegalArgumentException {
@@ -71,7 +78,9 @@ public class ItemService {
         User assignedTo = dto.getAssignedToId() != null ?
                 userRepository.findById(dto.getAssignedToId())
                         .orElseThrow(() -> new IllegalArgumentException("invalid assignedTo id")) : item.getAssignedTo();
-
+        if (!dto.getSubItems().isEmpty()) {
+            addSubItems(item, dto.getSubItems());
+        }
         item.setAssignedTo(assignedTo);
         item.setStatus(dto.getStatus() != null ? dto.getStatus() : item.getStatus());
         item.setType(dto.getType() != null ? dto.getType() : item.getType());
@@ -80,6 +89,19 @@ public class ItemService {
         item.setImportance(dto.getImportance());
         item.setDueDate(dto.getDueDate());
         return itemRepository.save(item);
+    }
+
+    private void addSubItems(Item i, List<Long> subItemsId) {
+        for (Long id : subItemsId) {
+            if (i.getId() == id)
+                throw new IllegalArgumentException("sub item should be different from the parent item");
+            Item item = itemRepository.findById(i.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Item does not exist"));
+            Item subItem = itemRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("subItem does not exist"));
+            subItem.setParent(item);
+            itemRepository.save(subItem);
+        }
     }
 
     public Item addComment(AddCommentDto dto, String userEmail) {
@@ -93,5 +115,10 @@ public class ItemService {
     public void delete(DeleteItemDto dto) {
         Item item = itemRepository.findById(dto.getItemId()).orElseThrow(() -> new IllegalArgumentException("item does not exist"));
         itemRepository.delete(item);
+    }
+
+    public List<Item> getSubItems(Long itemId) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("item does not exist"));
+        return itemRepository.findAllSubItems(item);
     }
 }
