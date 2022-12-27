@@ -13,9 +13,12 @@ public enum Operation {
     ADD_STATUS(Arrays.asList(UserRole.ADMIN)),
     REMOVE_STATUS(Arrays.asList(UserRole.ADMIN)),
 
+
     //Item operations:
     CREATE_ITEM(Arrays.asList(UserRole.ADMIN)),
     DELETE_ITEM(Arrays.asList(UserRole.ADMIN)),
+    UPDATE_ITEM_TYPE(Arrays.asList(UserRole.ADMIN, UserRole.LEADER)),
+    UPDATE_ITEM_STATUS(Arrays.asList(UserRole.ADMIN, UserRole.LEADER, UserRole.USER)),
     UPDATE_ITEM_TITLE(Arrays.asList(UserRole.ADMIN)),
     UPDATE_ITEM_DESCRIPTION(Arrays.asList(UserRole.ADMIN)),
     UPDATE_DUE_DATE_ITEMS(Arrays.asList(UserRole.ADMIN, UserRole.LEADER)),
@@ -23,8 +26,7 @@ public enum Operation {
     ASSIGN_ITEM(Arrays.asList(UserRole.ADMIN)),
     ADD_ITEM_TYPE(Arrays.asList(UserRole.ADMIN)),
     REMOVE_ITEM_TYPE(Arrays.asList(UserRole.ADMIN)),
-    ADD_COMMENT(Arrays.asList(UserRole.USER)),
-    UPDATE_ITEM_STATUS(Arrays.asList(UserRole.ADMIN, UserRole.LEADER, UserRole.USER));
+    ADD_COMMENT(Arrays.asList(UserRole.USER));
 
     private List<UserRole> userRole;
 

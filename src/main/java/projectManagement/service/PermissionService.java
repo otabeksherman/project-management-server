@@ -60,9 +60,25 @@ public class PermissionService {
     private Operation getOperationFromPath(String path){
         Operation operation=null;
 
+        //Item operations:
         if(path.endsWith("/item/create")){
             operation=Operation.CREATE_ITEM;
         }
+        if(path.endsWith("/item/delete")){
+            operation=Operation.DELETE_ITEM;
+        }
+        if(path.endsWith("/item/update/type")){
+            operation=Operation.UPDATE_ITEM_TYPE;
+        }
+        if(path.endsWith("/item/update/status")){
+            operation=Operation.UPDATE_ITEM_STATUS;
+        }
+        if(path.endsWith("/item/comment/add")){
+            operation=Operation.ADD_COMMENT;
+        }
+
+
+
 
         return operation;
     }
