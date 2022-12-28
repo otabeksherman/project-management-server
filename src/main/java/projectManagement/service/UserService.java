@@ -33,6 +33,13 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    /**
+
+     Loads the user details for the given username.
+     @param email The email of the user to load.
+     @return The UserDetails for the given email.
+     @throws UsernameNotFoundException If the user with the given email does not exist.
+     */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findUserByEmail(email);
@@ -40,11 +47,24 @@ public class UserService implements UserDetailsService {
                 Collections.singleton(new SimpleGrantedAuthority("USER"))); // TODO Set relevant roles
     }
 
+    /**
+
+     Determines if the given email is associated with a GitHub account.
+     @param email The email to check.
+     @return True if the email is associated with a GitHub account, false otherwise.
+     */
     public boolean isGithubAccount(String email) {
         User user = userRepository.findUserByEmail(email);
         return user.isGithubAccount();
     }
 
+    /**
+
+     Registers a new user with the given email and password.
+     @param dto The RegistrationDto containing the email and password of the user to register.
+     @return The newly registered User.
+     @throws SQLDataException If the email already exists in the users table.
+     */
     public User register(RegistrationDto dto) throws SQLDataException {
         if (userRepository.findUserByEmail(dto.getEmail()) != null) {
             throw new SQLDataException(String.format("Email %s exists in users table", dto.getEmail()));
@@ -54,15 +74,35 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    /**
+
+     Registers a user with a Github account.
+     @param email the email of the user to register
+     @return the saved user
+     */
     public User registerWithGit(String email) {
         User user = new User(email);
         return userRepository.save(user);
     }
 
+    /**
+     Determines if a given email exists in the user repository.
+     @param email the email to check for
+     @return true if the email exists, false otherwise
+     */
     public boolean emailExists(String email) {
         return (userRepository.findUserByEmail(email) != null);
     }
 
+    /**
+     Updates the notification settings for a given user.
+     @param email the email of the user to update
+     @param notify whether notifications should be enabled or disabled
+     @param type the type of notification to update (either "popup" or "email")
+     @return the updated user
+     @throws SQLDataException if the user with the given email does not exist
+     @throws IllegalArgumentException if the given notification type is invalid
+     */
     public User updateNotifyBy(String email, boolean notify, String type) throws Exception ,IllegalArgumentException{
         User user;
         if (userRepository.findUserByEmail(email) == null) {
@@ -91,6 +131,15 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    /**
+     * Registers a new user with the given email address and sets their notification preferences for
+     * popup notifications to the given value.
+     *
+     * @param email the email address of the user to be registered
+     * @param notify whether the user wants to receive popup notifications
+     * @return the updated user object
+     * @throws SQLDataException if the given email does not exist in the users table
+     */
     public User notifyByPopup(String email, boolean notify) throws SQLDataException {
         User user;
         if (userRepository.findUserByEmail(email) == null) {
@@ -102,6 +151,12 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    /**
+     * Retrieves the set of notifications for the user with the given email address.
+     * @param email the email address of the user
+     * @return the set of notifications for the user
+     * @throws SQLDataException if the given email does not exist in the users table
+     */
     public Set<Notification> getUserNotification(String email) throws SQLDataException {
         if (userRepository.findUserByEmail(email) == null) {
             throw new SQLDataException(String.format("Email %s is not exists in users table", email));
@@ -111,6 +166,13 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    /**
+     * Retrieves the set of notifications for the user with the given email address.
+     *
+     * @param email the email address of the user
+     * @return the set of notifications for the user
+     * @throws SQLDataException if the given email does not exist in the users table
+     */
     public Map<NotificationType,Boolean>  getUserNotificationTypeNotification(String email) throws SQLDataException {
         if (userRepository.findUserByEmail(email) == null) {
             throw new SQLDataException(String.format("Email %s is not exists in users table", email));
@@ -120,6 +182,15 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    /**
+     * Retrieves the notification preferences for the user with the given email address for each type
+     * of notification.
+     *
+     * @param email the email address of the user
+     * @return a map of notification types to boolean values indicating whether the user wants to receive
+     *         notifications of that type
+     * @throws SQLDataException if the given email does not exist in the users table
+     */
     public Map<String, Boolean>  getUserNotificationBySettings(String email) throws SQLDataException {
         if (userRepository.findUserByEmail(email) == null) {
             throw new SQLDataException(String.format("Email %s is not exists in users table", email));
@@ -131,7 +202,15 @@ public class UserService implements UserDetailsService {
             return notificationBySettings;
         }
     }
+    /**
 
+     Updates the notification settings for the specified notification type for the user with the given email.
+     @param email The email of the user to update the notification settings for.
+     @param notificationTypeStr The notification type to update the settings for.
+     @param update The new value for the notification setting.
+     @return The updated user.
+     @throws SQLDataException If a user with the given email does not exist in the users table.
+    */
     public User updateNotificationTypeSettings(String email, String notificationTypeStr, Boolean update) throws SQLDataException, IllegalArgumentException {
         User user;
         if (userRepository.findUserByEmail(email) == null) {

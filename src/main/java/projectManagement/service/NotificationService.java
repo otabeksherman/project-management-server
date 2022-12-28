@@ -59,6 +59,13 @@ public class NotificationService {
         }
     }
 
+    /**
+     * check if user want to get notification- if yes send the notification (by email or popup or both)
+     * @param user
+     * @param emailAssigner
+     * @param notification
+     * @throws Exception
+     */
     private void sendNotification(User user, String emailAssigner, Notification notification) throws Exception {
         if (user.getNotificationTypeSettings().get(notification.getNotificationType())) {
             if (user.getEmailNotify()) {
