@@ -26,6 +26,19 @@ public class PermissionService {
         this.boardRepository = boardRepository;
         this.userInBoardRepository = userInBoardRepository;
     }
+    public boolean isAuthorizedByOperation(Long boardId, String userEmail, Operation operation) {
+        logger.info("in isAuthorizedByOperation():");
+        UserInBoard boardUser = userInBoardRepository.findByBoardAndUser(boardId, userEmail);
+
+        if (boardUser == null) {
+            return false;
+        }
+        UserRole userRole = boardUser.getRole();
+
+        List<UserRole> usersRoleInBoard = operation.getUserRole(); //get the allows roles for this operation
+
+        return ((usersRoleInBoard.contains(userRole)));
+    }
 
     /**
      * Checks if the user is authorized for the required operation.
@@ -40,17 +53,11 @@ public class PermissionService {
     public boolean isAuthorized(Long boardId, String userEmail, String path) {
         logger.info("in isAuthorized():");
         Operation operation= getOperationFromPath(path);
-        UserInBoard boardUser = userInBoardRepository.findByBoardAndUser(boardId, userEmail);
 
-        if (boardUser == null) {
-            return false;
-        }
-        UserRole userRole = boardUser.getRole();
+        return isAuthorizedByOperation(boardId, userEmail,operation);
 
-        List<UserRole> usersRoleInBoard = operation.getUserRole(); //get the allows roles for this operation
-
-        return ((usersRoleInBoard.contains(userRole)));
     }
+
 
     /**
      * get path and return the appropriate operation

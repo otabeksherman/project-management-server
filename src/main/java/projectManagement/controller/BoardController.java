@@ -47,16 +47,15 @@ public class BoardController {
                 boardService.deleteStatus(dto)));
     }
 
-    @GetMapping("all")
+    @GetMapping("get/all")
     public ResponseEntity<BaseResponse> getAllBoards(@RequestAttribute String userEmail) {
         return ResponseEntity.ok().body(new BaseResponse("Success",
                 boardService.getAllBoards(userEmail)));
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<BaseResponse> getBoard(@PathVariable Long id,
                                                  @RequestAttribute String userEmail) {
-
         try {
             return ResponseEntity.ok().body(new BaseResponse("Success",
                     boardService.getBoard(userEmail, id)));
@@ -66,7 +65,7 @@ public class BoardController {
         }
     }
 
-    @GetMapping("{id}/users")
+    @GetMapping("{id}/get/users")
     public ResponseEntity<BaseResponse> getUsers(@PathVariable Long id, @RequestAttribute String userEmail) {
         return ResponseEntity.ok().body(new BaseResponse("Success",
                 userInBoardService.findByBoard(id)));

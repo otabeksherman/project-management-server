@@ -124,4 +124,14 @@ public class ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("item does not exist"));
         return itemRepository.findAllSubItems(item);
     }
+
+    /**
+     * send itemId and return its board id
+     * @param itemId
+     * @return board id
+     */
+    public Long getItemBoardId(Long itemId){
+        Item item= itemRepository.getReferenceById(itemId);
+        return  item.getBoard().getId();
+    }
 }
