@@ -1,6 +1,7 @@
 package projectManagement.service;
 
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -30,9 +31,11 @@ public class ItemService {
         Item parentItem = dto.getParentItemId() != null ?
                 itemRepository.findById(dto.getParentItemId())
                         .orElseThrow(() -> new IllegalArgumentException("parent item does not exist")) : null;
-        User assignedTo = dto.getAssignedToId() != null ?
-                userRepository.findById(dto.getAssignedToId())
-                        .orElseThrow(() -> new IllegalArgumentException("invalid assignedTo id")) : null;
+        User assignedTo = dto.getAssignedToEmail() != null ?
+                userRepository.findUserByEmail(dto.getAssignedToEmail()): null;
+        if(dto.getAssignedToEmail()!=null&&assignedTo==null){
+            throw new IllegalArgumentException("assign to user does not exist");
+        }
         if (!board.getTypes().contains(dto.getType())) {
             throw new IllegalArgumentException("illegal item type");
         }

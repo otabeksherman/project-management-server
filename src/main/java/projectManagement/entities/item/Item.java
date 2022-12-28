@@ -26,7 +26,7 @@ public class Item {
 
     private String type;
     private String status;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "parent_item_id")
     @JsonIgnore
     private Item parent;
@@ -38,6 +38,14 @@ public class Item {
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User creator;
+    @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST})
+    Set<Item> subItems;
+
+    @PreRemove
+    private void preRemove() {
+        subItems.forEach(child -> child.setParent(null));
+    }
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "assigned_to_id")
     private User assignedTo;
@@ -55,14 +63,16 @@ public class Item {
         this.parent = parent;
         this.board = board;
         this.creator = creator;
-        this.assignedTo=assignedTo;
+        this.assignedTo = assignedTo;
         this.dueDate = dueDate;
         this.importance = importance;
         this.title = title;
         this.description = description;
-        this.comments=new HashSet<>();
+        this.comments = new HashSet<>();
+        this.subItems = new HashSet<>();
     }
-    public void addComment(Comment comment){
+
+    public void addComment(Comment comment) {
         comments.add(comment);
     }
 }

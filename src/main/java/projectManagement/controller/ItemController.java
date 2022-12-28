@@ -26,7 +26,7 @@ public class ItemController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<BaseResponse> create(@RequestAttribute ItemDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse> create(@RequestBody ItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in create(): ");
         //ItemDto dto=gson.fromJson(String.valueOf(body),ItemDto.class);
 
@@ -64,7 +64,7 @@ public class ItemController {
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
     }
-    @PatchMapping("/update/type")
+    @PatchMapping("/type/update")
     public ResponseEntity<BaseResponse> updateType(@RequestBody UpdateItemTypeDto dto, @RequestAttribute String userEmail) {
         logger.info("in updateType(): ");
         try {
@@ -76,7 +76,7 @@ public class ItemController {
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
     }
-    @PatchMapping("/update/status")
+    @PatchMapping("/status/update")
     public ResponseEntity<BaseResponse> updateStatus(@RequestBody UpdateItemStatusDto dto, @RequestAttribute String userEmail) {
         logger.info("in updateStatus(): ");
         try {

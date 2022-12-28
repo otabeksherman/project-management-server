@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 public class RolesFilter extends OncePerRequestFilter {
     public static final Logger logger = LogManager.getLogger(RolesFilter.class);
