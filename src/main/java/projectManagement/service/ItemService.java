@@ -57,8 +57,6 @@ public class ItemService {
                 .assignedTo(assignedTo).dueDate(dto.getDueDate()).importance(dto.getImportance())
                 .title(dto.getTitle()).description(dto.getDescription()).build();
 
-        //Item item = new Item(dto.getType(), dto.getStatus(), parentItem, board, creator, assignedTo, dto.getDueDate(), dto.getImportance(), dto.getTitle(), dto.getDescription());
-
         Item savedItem = itemRepository.save(item);
         if (!dto.getSubItems().isEmpty()) {
             addSubItems(savedItem, dto.getSubItems());
