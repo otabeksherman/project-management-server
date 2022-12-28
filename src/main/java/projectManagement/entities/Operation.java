@@ -12,6 +12,7 @@ public enum Operation {
     CREATE_BOARD(Arrays.asList(UserRole.ADMIN, UserRole.LEADER, UserRole.USER)),
     ADD_STATUS(Arrays.asList(UserRole.ADMIN)),
     REMOVE_STATUS(Arrays.asList(UserRole.ADMIN)),
+    ADD_BOARD_TYPE(Arrays.asList(UserRole.ADMIN)),
 
 
     //Item operations:
