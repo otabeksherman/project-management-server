@@ -29,7 +29,7 @@ public class BoardController {
 
     @PostMapping("create")
     public ResponseEntity<BaseResponse<Board>> create(@RequestBody String name, @RequestAttribute String userEmail) {
-        return ResponseEntity.ok().body(new BaseResponse("Board created successfully",
+        return ResponseEntity.ok().body(new BaseResponse<>("Board created successfully",
                 boardService.create(name, userEmail)));
     }
 
@@ -42,7 +42,7 @@ public class BoardController {
      */
     @PatchMapping("status/add")
     public ResponseEntity<BaseResponse<Board>> addStatus(@RequestAttribute StatusDto dto, @RequestAttribute String userEmail) {
-        return ResponseEntity.ok().body(new BaseResponse("Status added successfully",
+        return ResponseEntity.ok().body(new BaseResponse<>("Status added successfully",
                 boardService.addStatus(dto)));
     }
 
@@ -55,7 +55,7 @@ public class BoardController {
      */
     @PatchMapping("type/add")
     public ResponseEntity<BaseResponse<Board>> addType(@RequestAttribute AddTypeDto dto, @RequestAttribute String userEmail) {
-        return ResponseEntity.ok().body(new BaseResponse("Type added successfully",
+        return ResponseEntity.ok().body(new BaseResponse<>("Type added successfully",
                 boardService.addType(dto)));
     }
 
@@ -68,7 +68,7 @@ public class BoardController {
      */
     @PatchMapping("status/delete")
     public ResponseEntity<BaseResponse<Board>> deleteStatus(@RequestAttribute StatusDto dto, @RequestAttribute String userEmail) {
-        return ResponseEntity.ok().body(new BaseResponse("Type added successfully",
+        return ResponseEntity.ok().body(new BaseResponse<>("Type added successfully",
                 boardService.deleteStatus(dto)));
     }
 
@@ -80,7 +80,7 @@ public class BoardController {
      */
     @GetMapping("get/all")
     public ResponseEntity<BaseResponse<List<Board>>> getAllBoards(@RequestAttribute String userEmail) {
-        return ResponseEntity.ok().body(new BaseResponse("Success",
+        return ResponseEntity.ok().body(new BaseResponse<>("Success",
                 boardService.getAllBoards(userEmail)));
     }
 
@@ -88,17 +88,17 @@ public class BoardController {
      * get userEmail to authentication , and board id- and return the board
      * @param id
      * @param userEmail
-     * @return Board
+     * @return Long
      */
     @GetMapping("/get/{id}")
-    public ResponseEntity<BaseResponse<Board>> getBoard(@PathVariable Long id,
+    public ResponseEntity<BaseResponse<Long>> getBoard(@PathVariable Long id,
                                                  @RequestAttribute String userEmail) {
         try {
             return ResponseEntity.ok().body(new BaseResponse("Success",
                     boardService.getBoard(id)));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new BaseResponse(String.format("Board with id %d not found", id), id));
+                    new BaseResponse<>(String.format("Board with id %d not found", id), id));
         }
     }
 
@@ -110,7 +110,7 @@ public class BoardController {
      */
     @GetMapping("{id}/get/users")
     public ResponseEntity<BaseResponse<List<String>>> getUsers(@PathVariable Long id, @RequestAttribute String userEmail) {
-        return ResponseEntity.ok().body(new BaseResponse("Success",
+        return ResponseEntity.ok().body(new BaseResponse<>("Success",
                 userInBoardService.findByBoard(id)));
     }
 
@@ -119,16 +119,16 @@ public class BoardController {
      *  share the board with other user.
      * @param dto
      * @param userEmail
-     * @return UserInBoard
+     * @return String
      */
     @PostMapping("share")
-    public ResponseEntity<BaseResponse<UserInBoard>> share(@RequestAttribute ShareBoardDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse<String>> share(@RequestAttribute ShareBoardDto dto, @RequestAttribute String userEmail) {
         try {
             return ResponseEntity.ok().body(new BaseResponse("Success",
                     userInBoardService.share(dto)));
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new BaseResponse(String.format("user with id %d not found", dto.getUserEmail()), dto.getUserEmail()));
+                    new BaseResponse<>(String.format("user with id %d not found", dto.getUserEmail()), dto.getUserEmail()));
         }
     }
 }
