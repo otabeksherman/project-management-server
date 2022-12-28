@@ -34,6 +34,12 @@ public class AuthenticationController {
     @Value("${github.clientSecret}")
     String gitClientSecret;
 
+    /**
+     * This function handles user authentication.
+     *
+     * @param request An object containing the email and password for the user trying to authenticate
+     * @return A ResponseEntity object with a BaseResponse body containing the result of the authentication and, if successful, a JWT token
+     */
     @PostMapping("/authenticate")
     public ResponseEntity<BaseResponse> authenticate(@RequestBody AuthenticationRequest request) {
         logger.info("in authenticate(): ");

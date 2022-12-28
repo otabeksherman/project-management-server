@@ -31,14 +31,33 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserInBoardRepository userInBoardRepository;
 
+    /**
+     * This method retrieves all boards that the user with the given email has access to.
+     *
+     * @param email The email of the user
+     * @return A list of boards that the user has access to
+     */
     public List<Board> getAllBoards(String email) {
         return userRepository.findBoards(email);
     }
 
+/**
+ * This method retrieves the board with the given ID, if it exists and the user with the given email has access to it.
+ *
+ * @param email The email of the user
+ * @param id The ID of the board
+ * @return The board with the given ID
+ */
     public Board getBoard(String email, Long id) throws SQLDataException {
         return boardRepository.findById(id).orElseThrow(SQLDataException::new);
     }
-
+    /**
+     * This method creates a new board with the given name and assigns the user with the given email as the owner.
+     *
+     * @param name The name of the new board
+     * @param userEmail The email of the user who will be the owner of the new board
+     * @return The newly created board
+     */
     public Board create(String name, String userEmail) {
         User user = userRepository.findUserByEmail(userEmail);
         Board board = new Board(name, user);
@@ -46,18 +65,35 @@ public class BoardService {
         return userInBoardRepository.save(userInBoard).getBoard();
     }
 
+    /**
+     * This method adds a new status to the board with the given ID.
+     *
+     * @param dto An object containing the ID of the board and the name of the new status
+     * @return The updated board
+     */
     public Board addStatus(StatusDto dto) {
         Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("board does not exist"));
         board.addStatus(dto.getName());
         return boardRepository.save(board);
     }
 
+    /**
+     * This method adds a new type to the board with the given ID.
+     *
+     * @param dto An object containing the ID of the board and the name of the new type
+     * @return The updated board
+     */
     public Board addType(AddTypeDto dto) {
         Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("board does not exist"));
         board.addType(dto.getName());
         return boardRepository.save(board);
     }
-
+    /**
+     * This method removes the status with the given name from the board with the given ID.
+     *
+     * @param dto An object containing the ID of the board and the name of the status to be removed
+     * @return The updated board
+     */
     public Board deleteStatus(StatusDto dto) {
         Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("board does not exist"));
         board.removeStatus(dto.getName());

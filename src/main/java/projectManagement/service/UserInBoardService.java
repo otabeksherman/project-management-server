@@ -24,10 +24,23 @@ public class UserInBoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
+    /**
+
+     This method returns a list of emails of users that are associated with a board with the given boardId.
+     @param boardId the id of the board to find the users for
+     @return a list of emails of users that are associated with the given board
+     */
     public List<String> findByBoard(Long boardId) {
         return userInBoardRepository.findByBoard_Id(boardId).stream().map(userInBoard -> userInBoard.getUser().getEmail()).collect(Collectors.toList());
     }
 
+    /**
+
+     This method creates a new UserInBoard entity and associates it with the board and user specified in the ShareBoardDto object.
+     @param dto a ShareBoardDto object containing the information about the board and user to associate
+     @return the UserInBoard entity that was created
+     @throws SQLDataException if the email specified in the dto object is not found in the users table
+     */
     public UserInBoard share(ShareBoardDto dto) throws SQLDataException {
         Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("board does not exist"));
         User user = userRepository.findUserByEmail(dto.getUserEmail());
