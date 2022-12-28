@@ -9,10 +9,14 @@ import projectManagement.dto.AddTypeDto;
 import projectManagement.dto.BaseResponse;
 import projectManagement.dto.ShareBoardDto;
 import projectManagement.dto.StatusDto;
-import projectManagement.exception.BoardNotFoundException;
+import projectManagement.entities.board.Board;
+import projectManagement.entities.user.UserInBoard;
 import projectManagement.exception.UserNotFoundException;
 import projectManagement.service.BoardService;
 import projectManagement.service.UserInBoardService;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 @CrossOrigin
@@ -24,7 +28,7 @@ public class BoardController {
     private final UserInBoardService userInBoardService;
 
     @PostMapping("create")
-    public ResponseEntity<BaseResponse> create(@RequestBody String name, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse<Board>> create(@RequestBody String name, @RequestAttribute String userEmail) {
         return ResponseEntity.ok().body(new BaseResponse("Board created successfully",
                 boardService.create(name, userEmail)));
     }
@@ -34,10 +38,10 @@ public class BoardController {
      *
      * @param dto       (StatusDto)
      * @param userEmail
-     * @return
+     * @return Board
      */
     @PatchMapping("status/add")
-    public <T> ResponseEntity<BaseResponse> addStatus(@RequestAttribute StatusDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse<Board>> addStatus(@RequestAttribute StatusDto dto, @RequestAttribute String userEmail) {
         return ResponseEntity.ok().body(new BaseResponse("Status added successfully",
                 boardService.addStatus(dto)));
     }
@@ -47,10 +51,10 @@ public class BoardController {
      *
      * @param dto
      * @param userEmail
-     * @return the type
+     * @return Board
      */
     @PatchMapping("type/add")
-    public ResponseEntity<BaseResponse> addType(@RequestAttribute AddTypeDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse<Board>> addType(@RequestAttribute AddTypeDto dto, @RequestAttribute String userEmail) {
         return ResponseEntity.ok().body(new BaseResponse("Type added successfully",
                 boardService.addType(dto)));
     }
@@ -60,40 +64,65 @@ public class BoardController {
      *
      * @param dto
      * @param userEmail
-     * @return
+     * @return Board
      */
     @PatchMapping("status/delete")
-    public ResponseEntity<BaseResponse> deleteStatus(@RequestAttribute StatusDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse<Board>> deleteStatus(@RequestAttribute StatusDto dto, @RequestAttribute String userEmail) {
         return ResponseEntity.ok().body(new BaseResponse("Type added successfully",
                 boardService.deleteStatus(dto)));
     }
 
+    /**
+     * get user email and return list of all his boards
+     *
+     * @param userEmail
+     * @return List<Board>
+     */
     @GetMapping("get/all")
-    public ResponseEntity<BaseResponse> getAllBoards(@RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse<List<Board>>> getAllBoards(@RequestAttribute String userEmail) {
         return ResponseEntity.ok().body(new BaseResponse("Success",
                 boardService.getAllBoards(userEmail)));
     }
 
+    /**
+     * get userEmail to authentication , and board id- and return the board
+     * @param id
+     * @param userEmail
+     * @return Board
+     */
     @GetMapping("/get/{id}")
-    public ResponseEntity<BaseResponse> getBoard(@PathVariable Long id,
+    public ResponseEntity<BaseResponse<Board>> getBoard(@PathVariable Long id,
                                                  @RequestAttribute String userEmail) {
         try {
             return ResponseEntity.ok().body(new BaseResponse("Success",
-                    boardService.getBoard(userEmail, id)));
-        } catch (BoardNotFoundException e) {
+                    boardService.getBoard(id)));
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new BaseResponse(String.format("Board with id %d not found", id), id));
         }
     }
 
+    /**
+     * get board id and return all the user's board
+     * @param id
+     * @param userEmail
+     * @return List<String>
+     */
     @GetMapping("{id}/get/users")
-    public ResponseEntity<BaseResponse> getUsers(@PathVariable Long id, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse<List<String>>> getUsers(@PathVariable Long id, @RequestAttribute String userEmail) {
         return ResponseEntity.ok().body(new BaseResponse("Success",
                 userInBoardService.findByBoard(id)));
     }
 
+    /**
+     *  get board user and role and return userInBoard entity.
+     *  share the board with other user.
+     * @param dto
+     * @param userEmail
+     * @return UserInBoard
+     */
     @PostMapping("share")
-    public ResponseEntity<BaseResponse> share(@RequestAttribute ShareBoardDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse<UserInBoard>> share(@RequestAttribute ShareBoardDto dto, @RequestAttribute String userEmail) {
         try {
             return ResponseEntity.ok().body(new BaseResponse("Success",
                     userInBoardService.share(dto)));
