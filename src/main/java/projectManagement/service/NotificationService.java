@@ -3,15 +3,15 @@ package projectManagement.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.notifictaion.Notification;
 import projectManagement.entities.notifictaion.NotificationType;
 import projectManagement.entities.user.User;
+import projectManagement.exception.NotificationSendFailedException;
+import projectManagement.exception.UserNotFoundException;
 import projectManagement.repository.UserRepository;
 
-import java.sql.SQLDataException;
 import java.time.LocalDate;
 
 import static projectManagement.util.MailUtil.sendMail;
@@ -31,13 +31,13 @@ public class NotificationService {
      * @param board
      * @param notificationtype
      * @return
-     * @throws Exception
-     * @throws SQLDataException
+     * @throws NotificationSendFailedException
+     * @throws UserNotFoundException
      */
-    public void addNotification(String emailUser, String emailAssigner, Board board, NotificationType notificationtype) throws Exception, SQLDataException {
+    public void addNotification(String emailUser, String emailAssigner, Board board, NotificationType notificationtype) throws NotificationSendFailedException, UserNotFoundException {
         logger.info("in addNotification(): ");
         if (userRepository.findUserByEmail(emailUser) == null && userRepository.findUserByEmail(emailAssigner) == null) {
-            throw new SQLDataException(String.format("Email %s is not exists in users table", emailUser));
+            throw new UserNotFoundException(String.format("Email %s is not exists in users table", emailUser));
         } else {
             User user = userRepository.findUserByEmail(emailUser);
             User userAssigner = userRepository.findUserByEmail(emailAssigner);
@@ -52,8 +52,8 @@ public class NotificationService {
             if (user.getNotificationTypeSettings().get(notification.getNotificationType())) {
                 try {
                     sendNotification(user, emailAssigner, notification);
-                } catch (Exception e) {
-                    throw new Exception("Unable to send mail");
+                } catch (NotificationSendFailedException e) {
+                    throw new NotificationSendFailedException("Unable to send mail");
                 }
             }
         }
@@ -61,12 +61,13 @@ public class NotificationService {
 
     /**
      * check if user want to get notification- if yes send the notification (by email or popup or both)
+     *
      * @param user
      * @param emailAssigner
      * @param notification
-     * @throws Exception
+     * @throws NotificationSendFailedException
      */
-    private void sendNotification(User user, String emailAssigner, Notification notification) throws Exception {
+    private void sendNotification(User user, String emailAssigner, Notification notification) throws NotificationSendFailedException {
         if (user.getNotificationTypeSettings().get(notification.getNotificationType())) {
             if (user.getEmailNotify()) {
                 String subject = "Project Management-email notification";
@@ -75,7 +76,7 @@ public class NotificationService {
                 try {
                     sendMail(user.getEmail(), subject, message);
                 } catch (Exception e) {
-                    throw new Exception("Unable to send mail");
+                    throw new NotificationSendFailedException("Unable to send mail");
                 }
             }
             if (user.getPopNotify()) {

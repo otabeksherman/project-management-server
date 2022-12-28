@@ -5,14 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import projectManagement.dto.ShareBoardDto;
-import projectManagement.dto.StatusDto;
 import projectManagement.dto.AddTypeDto;
 import projectManagement.dto.BaseResponse;
+import projectManagement.dto.ShareBoardDto;
+import projectManagement.dto.StatusDto;
+import projectManagement.exception.BoardNotFoundException;
+import projectManagement.exception.UserNotFoundException;
 import projectManagement.service.BoardService;
 import projectManagement.service.UserInBoardService;
-
-import java.sql.SQLDataException;
 
 @Controller
 @CrossOrigin
@@ -24,25 +24,27 @@ public class BoardController {
     private final UserInBoardService userInBoardService;
 
     @PostMapping("create")
-    public ResponseEntity<BaseResponse> create(@RequestBody  String name, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse> create(@RequestBody String name, @RequestAttribute String userEmail) {
         return ResponseEntity.ok().body(new BaseResponse("Board created successfully",
                 boardService.create(name, userEmail)));
     }
 
     /**
      * get status dto and add to board
-     * @param dto (StatusDto)
+     *
+     * @param dto       (StatusDto)
      * @param userEmail
      * @return
      */
     @PatchMapping("status/add")
-    public <T>ResponseEntity<BaseResponse> addStatus(@RequestAttribute StatusDto dto, @RequestAttribute String userEmail) {
+    public <T> ResponseEntity<BaseResponse> addStatus(@RequestAttribute StatusDto dto, @RequestAttribute String userEmail) {
         return ResponseEntity.ok().body(new BaseResponse("Status added successfully",
                 boardService.addStatus(dto)));
     }
 
     /**
      * add new type to bard
+     *
      * @param dto
      * @param userEmail
      * @return the type
@@ -55,6 +57,7 @@ public class BoardController {
 
     /**
      * get status and delete it from board
+     *
      * @param dto
      * @param userEmail
      * @return
@@ -77,7 +80,7 @@ public class BoardController {
         try {
             return ResponseEntity.ok().body(new BaseResponse("Success",
                     boardService.getBoard(userEmail, id)));
-        } catch (SQLDataException e) {
+        } catch (BoardNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new BaseResponse(String.format("Board with id %d not found", id), id));
         }
@@ -94,9 +97,9 @@ public class BoardController {
         try {
             return ResponseEntity.ok().body(new BaseResponse("Success",
                     userInBoardService.share(dto)));
-        } catch (SQLDataException e) {
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new BaseResponse(String.format("Board with id %d not found", dto.getUserEmail()), dto.getUserEmail()));
+                    new BaseResponse(String.format("user with id %d not found", dto.getUserEmail()), dto.getUserEmail()));
         }
     }
 }
