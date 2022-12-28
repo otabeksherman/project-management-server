@@ -34,12 +34,11 @@ public class PermissionService {
      *
      * @param boardId
      * @param userEmail
-     * @param path
+     * @param operation
      * @return true if the user has permissions for the required operation, else false.
      */
-    public boolean isAuthorized(Long boardId, String userEmail, String path) {
+    public boolean isAuthorized(Long boardId, String userEmail, Operation operation) {
         logger.info("in isAuthorized():");
-        Operation operation= getOperationFromPath(path);
         UserInBoard boardUser = userInBoardRepository.findByBoardAndUser(boardId, userEmail);
 
         if (boardUser == null) {
@@ -50,41 +49,8 @@ public class PermissionService {
         List<UserRole> usersRoleInBoard = operation.getUserRole(); //get the allows roles for this operation
 
         return ((usersRoleInBoard.contains(userRole)));
+
     }
-
-    /**
-     * get path and return the appropriate operation
-     * @param path
-     * @return Operation
-     */
-    private Operation getOperationFromPath(String path){
-        Operation operation=null;
-
-        //Item operations:
-        if(path.endsWith("/item/create")){
-            operation=Operation.CREATE_ITEM;
-        }
-        if(path.endsWith("/item/delete")){
-            operation=Operation.DELETE_ITEM;
-        }
-        if(path.endsWith("/item/update/type")){
-            operation=Operation.UPDATE_ITEM_TYPE;
-        }
-        if(path.endsWith("/item/update/status")){
-            operation=Operation.UPDATE_ITEM_STATUS;
-        }
-        if(path.endsWith("/item/comment/add")){
-            operation=Operation.ADD_COMMENT;
-        }
-
-
-
-
-        return operation;
-    }
-
-
-
 
     /**
      * add/change role to user to board

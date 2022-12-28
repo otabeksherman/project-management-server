@@ -23,7 +23,7 @@ import projectManagement.service.UserService;
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final UserService userDetailsService;
-//    private final RolesFilter rolesFilter;
+    private final RolesFilter rolesFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .and()
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-//                .addFilterAfter(rolesFilter, jwtAuthFilter.getClass())
+                .addFilterAfter(rolesFilter, jwtAuthFilter.getClass())
                 .csrf().disable().cors();
         return http.build();
     }

@@ -22,6 +22,11 @@ public class UserController {
     private final UserService userService;
     private static Logger logger = LogManager.getLogger(UserController.class);
 
+    /**
+     * registration of a new user. It returns a ResponseEntity object with a BaseResponse body.
+     * @param dto
+     * @return user email
+     */
     @PostMapping("/registration")
     public ResponseEntity<BaseResponse> register(@RequestBody RegistrationDto dto) {
         logger.info("in register(): ");
@@ -57,6 +62,7 @@ public class UserController {
     }
 
     /**
+     * ger user email and return it's notification list
      * @return user notification list
      */
     @GetMapping("/userNotification")
