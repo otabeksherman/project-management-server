@@ -11,6 +11,7 @@ import projectManagement.entities.item.Item;
 import projectManagement.entities.user.User;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,10 +27,10 @@ public class Board {
     private Long id;
     String name;
     @Column
-    @ElementCollection(targetClass=String.class)
+    @ElementCollection(targetClass = String.class)
     Set<String> types;
     @Column
-    @ElementCollection(targetClass=String.class)
+    @ElementCollection(targetClass = String.class)
     Set<String> statuses;
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -39,5 +40,24 @@ public class Board {
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Item> items;
 
+    public Board(String name, User user) {
+        this.name = name;
+        this.user = user;
+        this.types = new HashSet<>();
+        this.statuses = new HashSet<>();
+        this.items = new HashSet<>();
+    }
 
+    public void addStatus(String status) {
+        this.statuses.add(status);
+    }
+
+    public void addType(String type) {
+        this.types.add(type);
+    }
+
+    public void removeStatus(String status) {
+        this.items.removeIf(item -> item.getStatus().equals(status));
+        this.statuses.remove(status);
+    }
 }
