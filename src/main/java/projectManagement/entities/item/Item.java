@@ -23,12 +23,7 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @ManyToOne
-//    @JoinColumn(name = "type_id")
-//    private ItemType type;
-//    @ManyToOne
-//    @JoinColumn(name = "status_id")
-//    private Status status;
+
     private String type;
     private String status;
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
