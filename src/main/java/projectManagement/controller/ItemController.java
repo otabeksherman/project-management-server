@@ -22,14 +22,10 @@ import java.sql.SQLDataException;
 public class ItemController {
     private final ItemService itemService;
     private static Logger logger = LogManager.getLogger(ItemController.class);
-    //private static Gson gson = new GsonBuilder().create();
-
 
     @PostMapping("/create")
     public ResponseEntity<BaseResponse> create(@RequestAttribute ItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in create(): ");
-        //ItemDto dto=gson.fromJson(String.valueOf(body),ItemDto.class);
-
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Item created successfully",
@@ -40,7 +36,7 @@ public class ItemController {
         }
     }
     @DeleteMapping("/delete")
-    public ResponseEntity<BaseResponse> delete(@RequestBody DeleteItemDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse> delete(@RequestAttribute DeleteItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in delete(): ");
         try {
             itemService.delete(dto);
@@ -53,7 +49,7 @@ public class ItemController {
         }
     }
     @PatchMapping("/update")
-    public ResponseEntity<BaseResponse> update(@RequestBody UpdateItemDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse> update(@RequestAttribute UpdateItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in update(): ");
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -65,7 +61,7 @@ public class ItemController {
         }
     }
     @PatchMapping("/update/type")
-    public ResponseEntity<BaseResponse> updateType(@RequestBody UpdateItemTypeDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse> updateType(@RequestAttribute UpdateItemTypeDto dto, @RequestAttribute String userEmail) {
         logger.info("in updateType(): ");
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -77,7 +73,7 @@ public class ItemController {
         }
     }
     @PatchMapping("/update/status")
-    public ResponseEntity<BaseResponse> updateStatus(@RequestBody UpdateItemStatusDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse> updateStatus(@RequestAttribute UpdateItemStatusDto dto, @RequestAttribute String userEmail) {
         logger.info("in updateStatus(): ");
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -89,7 +85,7 @@ public class ItemController {
         }
     }
     @PatchMapping("/comment/add")
-    public ResponseEntity<BaseResponse> addComment(@RequestBody AddCommentDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse> addComment(@RequestAttribute AddCommentDto dto, @RequestAttribute String userEmail) {
         logger.info("in addComment(): ");
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
