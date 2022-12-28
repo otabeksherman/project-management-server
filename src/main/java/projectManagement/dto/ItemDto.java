@@ -21,7 +21,7 @@ public class ItemDto {
     @NotNull
     @NotEmpty
     private Long boardId;
-    private Long assignedToId;
+    private String assignedToEmail;
     private Date dueDate;
     private int importance;
     @NotNull
