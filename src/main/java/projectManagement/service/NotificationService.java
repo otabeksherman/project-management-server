@@ -49,41 +49,62 @@ public class NotificationService {
             user.addNotifications(notification);
             userRepository.save(user);
 
-            if (user.getNotificationTypeSettings().get(notification.getNotificationType())) {
+            /**
+             * check if user notification type setting is active (on email)
+             * if true- try to send notification
+             */
+            if (user.getNotificationTypeSettingsEmail().get(notification.getNotificationType())) {
                 try {
-                    sendNotification(user, emailAssigner, notification);
+                    sendEmailNotification(user, emailAssigner, notification);
                 } catch (NotificationSendFailedException e) {
                     throw new NotificationSendFailedException("Unable to send mail");
                 }
+            }
+
+            /**
+             * check if user notification type setting is active (on popup)
+             * if true- try to send notification
+             */
+            if (user.getNotificationTypeSettingsPopup().get(notification.getNotificationType())) {
+                sendPopupNotification(user, emailAssigner, notification);
             }
         }
     }
 
     /**
-     * check if user want to get notification- if yes send the notification (by email or popup or both)
+     * send the notification by email
      *
      * @param user
      * @param emailAssigner
      * @param notification
      * @throws NotificationSendFailedException
      */
-    private void sendNotification(User user, String emailAssigner, Notification notification) throws NotificationSendFailedException {
-        if (user.getNotificationTypeSettings().get(notification.getNotificationType())) {
-            if (user.getEmailNotify()) {
-                String subject = "Project Management-email notification";
-                String message = "notification from user: " + emailAssigner +
-                        "notification: " + notification.getNotificationType().getText();//TODO: change the message
-                try {
-                    sendMail(user.getEmail(), subject, message);
-                } catch (Exception e) {
-                    throw new NotificationSendFailedException("Unable to send mail");
-                }
-            }
-            if (user.getPopNotify()) {
-                //TODO: popup notification
-            }
+    private void sendEmailNotification(User user, String emailAssigner, Notification notification) throws NotificationSendFailedException {
+        String subject = "Project Management-email notification";
+        String message = "notification from user: " + emailAssigner +
+                "notification: " + notification.getNotificationType().getText();
+        try {
+            sendMail(user.getEmail(), subject, message);
+        } catch (Exception e) {
+            throw new NotificationSendFailedException("Unable to send mail");
         }
     }
 
+
+    /**
+     * send the notification by popup
+     *
+     * @param user
+     * @param emailAssigner
+     * @param notification
+     */
+    private void sendPopupNotification(User user, String emailAssigner, Notification notification) {
+
+        String subject = "Project Management-email notification";
+        String message = "notification from user: " + emailAssigner +
+                "notification: " + notification.getNotificationType().getText();
+        //TODO: popup notification
+
+    }
 
 }
