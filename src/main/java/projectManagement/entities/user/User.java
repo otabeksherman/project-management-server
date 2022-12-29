@@ -30,24 +30,31 @@ public class User {
     private Set<Board> boards;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Notification> notifications;
-    @Column(nullable = false)
-    private Boolean emailNotify;
-    @Column(nullable = false)
-    private Boolean popNotify;
+//    @Column(nullable = false)
+//    private Boolean emailNotify;
+//    @Column(nullable = false)
+//    private Boolean popNotify;
 
     @ElementCollection
-    @CollectionTable(name="notification_type")
+    @CollectionTable(name="notification_type_by_email")
     @MapKeyEnumerated(EnumType.STRING)
     @MapKeyColumn
     @Column
-    private Map<NotificationType,Boolean> notificationTypeSettings;
+    private Map<NotificationType,Boolean> notificationTypeSettingsEmail;
+
+    @ElementCollection
+    @CollectionTable(name="notification_type_by_popup")
+    @MapKeyEnumerated(EnumType.STRING)
+    @MapKeyColumn
+    @Column
+    private Map<NotificationType,Boolean> notificationTypeSettingsPopup;
 
     public User(String email, String password) {
         this.githubAccount = false;
         this.email = email;
         this.password = password;
-        this.emailNotify = true;
-        this.popNotify = true;
+//        this.emailNotify = true;
+//        this.popNotify = true;
         this.boards = new HashSet<>();
         this.notifications = new HashSet<>();
         initNotifications();
@@ -57,15 +64,34 @@ public class User {
         this(email,email);
     }
 
+    /**
+     * active all user notification type setting to true (on email and popup)
+     */
     private void initNotifications(){
-        notificationTypeSettings= new EnumMap<NotificationType,Boolean>(NotificationType.class);
+        notificationTypeSettingsEmail= new EnumMap<NotificationType,Boolean>(NotificationType.class);
+        notificationTypeSettingsPopup= new EnumMap<NotificationType,Boolean>(NotificationType.class);
         for(NotificationType notification: NotificationType.values()){
-            notificationTypeSettings.put(notification,true);
+            notificationTypeSettingsEmail.put(notification,true);
+            notificationTypeSettingsPopup.put(notification,true);
         }
     }
 
-    public void updateNotificationTypeSetting(NotificationType notificationType, Boolean update){
-        notificationTypeSettings.put(notificationType,update);
+    /**
+     * change notification type state (on email)
+     * @param notificationType
+     * @param update
+     */
+    public void updateNotificationTypeSettingByEmail(NotificationType notificationType, Boolean update){
+        notificationTypeSettingsEmail.put(notificationType,update);
+    }
+
+    /**
+     * change notification type state (on popup)
+     * @param notificationType
+     * @param update
+     */
+    public void updateNotificationTypeSettingByPopup(NotificationType notificationType, Boolean update){
+        notificationTypeSettingsPopup.put(notificationType,update);
     }
 
     public boolean isGithubAccount() {
