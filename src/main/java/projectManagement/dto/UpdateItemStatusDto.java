@@ -15,4 +15,7 @@ public class UpdateItemStatusDto {
     @NotNull
     @NotEmpty
     private String status;
+    @NotNull
+    @NotEmpty
+    private Long boardId;
 }

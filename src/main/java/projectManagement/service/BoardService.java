@@ -38,7 +38,8 @@ public class BoardService {
      * @return A list of boards that the user has access to
      */
     public List<Board> getAllBoards(String email) {
-        return userRepository.findBoards(email);
+        List<UserInBoard> userInBoards =userInBoardRepository.findByUser_Email(email);
+        return userInBoards.stream().map(userInBoard -> userInBoard.getBoard()).collect(Collectors.toList());
     }
 
 /**
@@ -61,7 +62,7 @@ public class BoardService {
     public Board create(String name, String userEmail) {
         User user = userRepository.findUserByEmail(userEmail);
         Board board = new Board(name, user);
-        UserInBoard userInBoard=new UserInBoard(board, user, UserRole.ADMIN);
+        UserInBoard userInBoard = new UserInBoard(board, user, UserRole.ADMIN);
         return userInBoardRepository.save(userInBoard).getBoard();
     }
 
@@ -100,4 +101,11 @@ public class BoardService {
         return boardRepository.save(board);
     }
 
+    public UserRole getPermission(Long boardId, String userEmail) {
+        UserInBoard userInBoard = userInBoardRepository.findByBoardAndUser(boardId, userEmail);
+        if (userInBoard == null) {
+            throw new IllegalArgumentException("user does not have permission to the board");
+        }
+        return userInBoard.getRole();
+    }
 }

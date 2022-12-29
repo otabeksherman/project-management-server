@@ -11,6 +11,9 @@ import projectManagement.entities.notifictaion.NotificationType;
 import projectManagement.entities.user.User;
 import projectManagement.repository.UserRepository;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.sql.SQLDataException;
 import java.time.LocalDate;
 
@@ -50,11 +53,9 @@ public class NotificationService {
             userRepository.save(user);
 
             if (user.getNotificationTypeSettings().get(notification.getNotificationType())) {
-                try {
-                    sendNotification(user, emailAssigner, notification);
-                } catch (Exception e) {
-                    throw new Exception("Unable to send mail");
-                }
+
+                sendNotification(user, emailAssigner, notification);
+
             }
         }
     }
@@ -72,11 +73,14 @@ public class NotificationService {
                 String subject = "Project Management-email notification";
                 String message = "notification from user: " + emailAssigner +
                         "notification: " + notification.getNotificationType().getText();//TODO: change the message
-                try {
-                    sendMail(user.getEmail(), subject, message);
-                } catch (Exception e) {
-                    throw new Exception("Unable to send mail");
-                }
+                new Thread(() -> {
+                    try {
+                        sendMail(user.getEmail(), subject, message);
+                    } catch (MessagingException | IOException | GeneralSecurityException e) {
+                        logger.error("failed to send email");
+                    }
+                }).start();
+
             }
             if (user.getPopNotify()) {
                 //TODO: popup notification

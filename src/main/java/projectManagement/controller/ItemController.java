@@ -8,7 +8,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import projectManagement.dto.*;
+import projectManagement.entities.item.Item;
+import projectManagement.entities.item.ItemFilter;
+import projectManagement.entities.notifictaion.NotificationType;
+import projectManagement.entities.user.User;
 import projectManagement.service.ItemService;
+import projectManagement.service.NotificationService;
+import projectManagement.service.UserInBoardService;
+
+import javax.mail.MessagingException;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.sql.SQLDataException;
+import java.util.List;
+
 
 @Controller
 @CrossOrigin
@@ -16,6 +29,8 @@ import projectManagement.service.ItemService;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private final NotificationService notificationService;
+    private final UserInBoardService userInBoardService;
     private static Logger logger = LogManager.getLogger(ItemController.class);
 
     /**
@@ -40,6 +55,7 @@ public class ItemController {
         }
     }
 
+
     /**
      * deletion of an "item" using a DeleteItemDto object and a userEmail string.
      * It returns a ResponseEntity object with a BaseResponse body.
@@ -52,11 +68,17 @@ public class ItemController {
     public ResponseEntity<BaseResponse> delete(@RequestAttribute DeleteItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in delete(): ");
         try {
+            Item item = itemService.getById(dto.getItemId());
+            List<String> usersInBoard = userInBoardService.findByBoard(item.getBoard().getId());
             itemService.delete(dto);
+            for (String email :
+                    usersInBoard) {
+                notificationService.addNotification(email, userEmail, item.getBoard(), NotificationType.STATUS_CHANGED);
+            }
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new BaseResponse<>("item deleted successfully",
                             dto.getItemId()));
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
@@ -75,10 +97,19 @@ public class ItemController {
     public ResponseEntity<BaseResponse> update(@RequestAttribute UpdateItemDto dto, @RequestAttribute String userEmail) {
         logger.info("in update(): ");
         try {
+            Item updatedItem = itemService.update(dto);
+            if (dto.getAssignedToEmail() != null) {
+                notificationService.addNotification(updatedItem.getAssignedTo().getEmail(), userEmail, updatedItem.getBoard(), NotificationType.ASSIGN_TO_ME);
+            }
+            List<String> usersInBoard = userInBoardService.findByBoard(updatedItem.getBoard().getId());
+            for (String email :
+                    usersInBoard) {
+                notificationService.addNotification(email, userEmail, updatedItem.getBoard(), NotificationType.DATA_CHANGED);
+            }
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Item updated successfully",
-                            itemService.update(dto)));
-        } catch (IllegalArgumentException e) {
+                            updatedItem));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
@@ -116,10 +147,16 @@ public class ItemController {
     public ResponseEntity<BaseResponse> updateStatus(@RequestAttribute UpdateItemStatusDto dto, @RequestAttribute String userEmail) {
         logger.info("in updateStatus(): ");
         try {
+            Item updatedItem = itemService.updateStatus(dto);
+            List<String> usersInBoard = userInBoardService.findByBoard(updatedItem.getBoard().getId());
+            for (String email :
+                    usersInBoard) {
+                notificationService.addNotification(email, userEmail, updatedItem.getBoard(), NotificationType.STATUS_CHANGED);
+            }
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Item status updated successfully",
-                            itemService.updateStatus(dto)));
-        } catch (IllegalArgumentException e) {
+                            updatedItem));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
@@ -132,14 +169,21 @@ public class ItemController {
      * @param dto
      * @param userEmail
      */
+
     @PatchMapping("/comment/add")
     public ResponseEntity<BaseResponse> addComment(@RequestAttribute AddCommentDto dto, @RequestAttribute String userEmail) {
         logger.info("in addComment(): ");
         try {
+            Item updatedItem = itemService.addComment(dto, userEmail);
+            List<String> usersInBoard = userInBoardService.findByBoard(updatedItem.getBoard().getId());
+            for (String email :
+                    usersInBoard) {
+                notificationService.addNotification(email, userEmail, updatedItem.getBoard(), NotificationType.STATUS_CHANGED);
+            }
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Comment added successfully",
-                            itemService.addComment(dto, userEmail)));
-        } catch (IllegalArgumentException e) {
+                            updatedItem));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), dto));
         }
@@ -153,6 +197,7 @@ public class ItemController {
      * @param userEmail
      * @return
      */
+
     @GetMapping("/{id}/get/subitems")
     public ResponseEntity<BaseResponse> getSubItems(@PathVariable Long id, @RequestAttribute String userEmail) {
         logger.info("in getSubItems(): ");
@@ -163,6 +208,18 @@ public class ItemController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), id));
+        }
+    }
+
+    @GetMapping("{boardId}/get/{filter}")
+    public ResponseEntity<BaseResponse> filter(@PathVariable Long boardId, @PathVariable ItemFilter filter, @RequestAttribute String userEmail) {
+        logger.info("in filter(): ");
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(new BaseResponse("Success", itemService.filter(boardId, filter, userEmail)));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new BaseResponse<>(e.getMessage(), null));
         }
     }
 }

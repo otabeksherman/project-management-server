@@ -96,7 +96,18 @@ public class BoardController {
                     userInBoardService.share(dto)));
         } catch (SQLDataException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new BaseResponse(String.format("Board with id %d not found", dto.getUserEmail()), dto.getUserEmail()));
+                    new BaseResponse(String.format("User not found"), dto.getUserEmail()));
+        }
+    }
+
+    @GetMapping("{id}/get/permission")
+    public ResponseEntity<BaseResponse> getPermission(@PathVariable Long id, @RequestAttribute String userEmail) {
+        try {
+            return ResponseEntity.ok().body(new BaseResponse("Success",
+                    boardService.getPermission(id, userEmail)));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new BaseResponse(e.getMessage(), id));
         }
     }
 }

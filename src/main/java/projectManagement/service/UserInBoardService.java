@@ -8,6 +8,7 @@ import projectManagement.dto.ShareBoardDto;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.user.User;
 import projectManagement.entities.user.UserInBoard;
+import projectManagement.entities.user.UserRole;
 import projectManagement.repository.BoardRepository;
 import projectManagement.repository.UserInBoardRepository;
 import projectManagement.repository.UserRepository;
@@ -47,7 +48,8 @@ public class UserInBoardService {
         if (user == null) {
             throw new SQLDataException(String.format("Email %s is not exists in users table", dto.getUserEmail()));
         }
-        UserInBoard userInBoard = new UserInBoard(board, user, dto.getRole());
+        UserRole userRole=UserRole.valueOf(dto.getRole());
+        UserInBoard userInBoard = new UserInBoard(board, user, userRole);
         return userInBoardRepository.save(userInBoard);
     }
 }

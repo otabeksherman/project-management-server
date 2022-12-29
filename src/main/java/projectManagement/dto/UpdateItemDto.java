@@ -20,7 +20,7 @@ public class UpdateItemDto {
     @NotNull
     @NotEmpty
     private String status;
-    private Long assignedToId;
+    private String assignedToEmail;
     private Date dueDate;
     private int importance;
     @NotNull
