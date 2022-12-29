@@ -19,6 +19,7 @@ import org.hibernate.cfg.Environment;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import projectManagement.exception.NotificationSendFailedException;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -99,7 +100,7 @@ public class MailUtil {
             if (error.getCode() == 403) {
                 System.err.println("Unable to send message: " + e.getDetails());
             } else {
-                throw e;
+                throw new NotificationSendFailedException("error while send message: " + e.getDetails());
             }
         }
     }

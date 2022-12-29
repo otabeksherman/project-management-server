@@ -17,7 +17,7 @@ import projectManagement.dto.BaseResponse;
 import projectManagement.service.UserService;
 import projectManagement.util.JwtUtils;
 
-import static projectManagement.util.GitAuthUtil.*;
+import static projectManagement.util.GitAuthUtil.getEmailFromGit;
 
 @Controller
 @CrossOrigin
@@ -41,14 +41,14 @@ public class AuthenticationController {
      * @return A ResponseEntity object with a BaseResponse body containing the result of the authentication and, if successful, a JWT token
      */
     @PostMapping("/authenticate")
-    public ResponseEntity<BaseResponse> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<BaseResponse<String>> authenticate(@RequestBody AuthenticationRequest request) {
         logger.info("in authenticate(): ");
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new BaseResponse<>("Bad credentials", request));
+                    .body(new BaseResponse<>("Bad credentials", null));
         }
         final UserDetails user = userService.loadUserByUsername(request.getEmail());
         return ResponseEntity.ok(new BaseResponse<>("Success", jwtUtils.generateToken(user)));
@@ -64,7 +64,7 @@ public class AuthenticationController {
      * @return user email
      */
     @GetMapping("/github")
-    public ResponseEntity<BaseResponse> authWithGit(@RequestParam String code) {
+    public ResponseEntity<BaseResponse<String>> authWithGit(@RequestParam String code) {
         logger.info("in authWithGit(): ");
         try {
             String email = getEmailFromGit(code, gitClientId, gitClientSecret);

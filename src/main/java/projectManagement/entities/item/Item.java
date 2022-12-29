@@ -1,10 +1,7 @@
 package projectManagement.entities.item;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.user.User;
 
@@ -71,6 +68,81 @@ public class Item {
         this.comments = new HashSet<>();
         this.subItems = new HashSet<>();
     }
+    public static class Builder {
+        private String type;
+        private String status;
+        private Item parent;
+        private Board board;
+        private User creator;
+        private Set<Item> subItems;
+        private User assignedTo;
+        private Date dueDate;
+        private int importance;
+        private String title;
+        private String description;
+        private Set<Comment> comments;
+
+        public Builder() {
+        }
+        public Builder type(String type){
+            this.type=type;
+            return this;
+        }
+        public Builder status(String status){
+            this.status=status;
+            return this;
+        }
+        public Builder parent(Item parent){
+            this.parent=parent;
+            return this;
+        }
+        public Builder board(Board board){
+            this.board=board;
+            return this;
+        }
+        public Builder creator(User creator){
+            this.creator=creator;
+            return this;
+        }
+        public Builder assignedTo(User assignedTo){
+            this.assignedTo=assignedTo;
+            return this;
+        }
+        public Builder dueDate(Date dueDate){
+            this.dueDate=dueDate;
+            return this;
+        }
+        public Builder importance(int importance){
+            this.importance=importance;
+            return this;
+        }
+        public Builder title(String title){
+            this.title=title;
+            return this;
+        }
+        public Builder description(String description){
+            this.description=description;
+            return this;
+        }
+        public Item build(){
+            return new Item(this);
+        }
+    }
+
+    public Item(Builder builder){
+        this.type = builder.type;
+        this.status = builder.status;
+        this.parent = builder.parent;
+        this.board = builder.board;
+        this.creator = builder.creator;
+        this.assignedTo = builder.assignedTo;
+        this.dueDate = builder.dueDate;
+        this.importance = builder.importance;
+        this.title = builder.title;
+        this.description = builder.description;
+    }
+
+
 
     public void addComment(Comment comment) {
         comments.add(comment);

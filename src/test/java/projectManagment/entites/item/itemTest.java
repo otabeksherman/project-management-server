@@ -1,4 +1,4 @@
-package projectManagment.controller.entites.item;
+package projectManagment.entites.item;
 import org.junit.jupiter.api.Test;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.item.Item;
