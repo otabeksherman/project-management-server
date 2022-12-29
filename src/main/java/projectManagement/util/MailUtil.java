@@ -74,7 +74,7 @@ public class MailUtil {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
-    public static void sendMail(String emailAddress, String subject, String message) throws MessagingException, IOException, GeneralSecurityException {
+    public static void sendMail(String emailAddress, String subject, String message) throws MessagingException, IOException, GeneralSecurityException, NotificationSendFailedException {
         Gmail service = init();
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);

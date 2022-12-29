@@ -15,7 +15,6 @@ import projectManagement.repository.UserRepository;
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.sql.SQLDataException;
 import java.time.LocalDate;
 
 import static projectManagement.util.MailUtil.sendMail;
@@ -63,10 +62,6 @@ public class NotificationService {
                 } catch (NotificationSendFailedException e) {
                     throw new NotificationSendFailedException("Unable to send mail");
                 }
-            if (user.getNotificationTypeSettings().get(notification.getNotificationType())) {
-
-                sendNotification(user, emailAssigner, notification);
-
             }
 
             /**
@@ -92,7 +87,13 @@ public class NotificationService {
         String message = "notification from user: " + emailAssigner +
                 "notification: " + notification.getNotificationType().getText();
         try {
-            sendMail(user.getEmail(), subject, message);
+           new Thread(()-> {
+               try {
+                   sendMail(user.getEmail(), subject, message);
+               } catch (MessagingException | IOException | GeneralSecurityException | NotificationSendFailedException e) {
+                  logger.error("failed to send email");
+               }
+           }) .start();
         } catch (Exception e) {
             throw new NotificationSendFailedException("Unable to send mail");
         }
@@ -112,26 +113,6 @@ public class NotificationService {
         String message = "notification from user: " + emailAssigner +
                 "notification: " + notification.getNotificationType().getText();
         //TODO: popup notification
-    private void sendNotification(User user, String emailAssigner, Notification notification) throws Exception {
-        if (user.getNotificationTypeSettings().get(notification.getNotificationType())) {
-            if (user.getEmailNotify()) {
-                String subject = "Project Management-email notification";
-                String message = "notification from user: " + emailAssigner +
-                        "notification: " + notification.getNotificationType().getText();//TODO: change the message
-                new Thread(() -> {
-                    try {
-                        sendMail(user.getEmail(), subject, message);
-                    } catch (MessagingException | IOException | GeneralSecurityException e) {
-                        logger.error("failed to send email");
-                    }
-                }).start();
-
-            }
-            if (user.getPopNotify()) {
-                //TODO: popup notification
-            }
-        }
-    }
 
     }
 
