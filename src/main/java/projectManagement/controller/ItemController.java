@@ -9,11 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import projectManagement.dto.*;
 import projectManagement.entities.item.Item;
-import projectManagement.service.EmitterService;
 import projectManagement.service.ItemService;
 import projectManagement.service.LiveNotificationService;
 
-import java.sql.SQLDataException;
 import java.util.Map;
 
 @Controller
@@ -22,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final LiveNotificationService notificationService;
+    private final LiveNotificationService liveNotificationService;
 
     private static Logger logger = LogManager.getLogger(ItemController.class);
 
@@ -31,7 +29,7 @@ public class ItemController {
         logger.info("in create(): ");
         try {
             Item item = itemService.create(dto, userEmail);
-            notificationService.sendNotification(userEmail, dto.getBoardId(),
+            liveNotificationService.sendNotification(userEmail, dto.getBoardId(),
                     new EventDto("CREATE", Map.of("ITEM", item)));
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Item created successfully", item));
@@ -46,7 +44,7 @@ public class ItemController {
         logger.info("in delete(): ");
         try {
             itemService.delete(dto);
-            notificationService.sendNotification(userEmail, dto.getBoardId(),
+            liveNotificationService.sendNotification(userEmail, dto.getBoardId(),
                     new EventDto("DELETE", Map.of("ITEM", dto.getItemId())));
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new BaseResponse<>("item deleted successfully",
@@ -62,7 +60,7 @@ public class ItemController {
         logger.info("in update(): ");
         try {
             Item item = itemService.update(dto);
-            notificationService.sendNotification(userEmail, dto.getBoardId(),
+            liveNotificationService.sendNotification(userEmail, dto.getBoardId(),
                     new EventDto("UPDATE", Map.of("ITEM", item)));
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Item updated successfully", item));
@@ -77,7 +75,7 @@ public class ItemController {
         logger.info("in updateType(): ");
         try {
             Item item = itemService.updateType(dto);
-            notificationService.sendNotification(userEmail, dto.getBoardId(),
+            liveNotificationService.sendNotification(userEmail, dto.getBoardId(),
                     new EventDto("UPDATE", Map.of("ITEM_TYPE", item)));
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Item type updated successfully", item));
@@ -92,7 +90,7 @@ public class ItemController {
         logger.info("in updateStatus(): ");
         try {
             Item item = itemService.updateStatus(dto);
-            notificationService.sendNotification(userEmail, dto.getBoardId(),
+            liveNotificationService.sendNotification(userEmail, dto.getBoardId(),
                     new EventDto("UPDATE", Map.of("ITEM_STATUS", item)));
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Item status updated successfully", item));
@@ -107,7 +105,7 @@ public class ItemController {
         logger.info("in addComment(): ");
         try {
             Item item = itemService.addComment(dto, userEmail);
-            notificationService.sendNotification(userEmail, dto.getBoardId(),
+            liveNotificationService.sendNotification(userEmail, dto.getBoardId(),
                     new EventDto("ADD", Map.of("COMMENT", item)));
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Comment added successfully",
