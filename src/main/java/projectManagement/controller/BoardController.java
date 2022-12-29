@@ -88,17 +88,17 @@ public class BoardController {
      * get userEmail to authentication , and board id- and return the board
      * @param id
      * @param userEmail
-     * @return Long
+     * @return Board
      */
     @GetMapping("/get/{id}")
-    public ResponseEntity<BaseResponse<Long>> getBoard(@PathVariable Long id,
+    public ResponseEntity<BaseResponse<Board>> getBoard(@PathVariable Long id,
                                                  @RequestAttribute String userEmail) {
         try {
             return ResponseEntity.ok().body(new BaseResponse("Success",
                     boardService.getBoard(id)));
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new BaseResponse<>(String.format("Board with id %d not found", id), id));
+                    new BaseResponse<>(String.format("Board with id %d not found", id), null));
         }
     }
 
@@ -119,16 +119,16 @@ public class BoardController {
      *  share the board with other user.
      * @param dto
      * @param userEmail
-     * @return String
+     * @return UserInBoard
      */
     @PostMapping("share")
-    public ResponseEntity<BaseResponse<String>> share(@RequestAttribute ShareBoardDto dto, @RequestAttribute String userEmail) {
+    public ResponseEntity<BaseResponse<UserInBoard>> share(@RequestAttribute ShareBoardDto dto, @RequestAttribute String userEmail) {
         try {
             return ResponseEntity.ok().body(new BaseResponse("Success",
                     userInBoardService.share(dto)));
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new BaseResponse<>(String.format("user with id %d not found", dto.getUserEmail()), dto.getUserEmail()));
+                    new BaseResponse<>(String.format("user with id %d not found", dto.getUserEmail()),null));
         }
     }
 }
