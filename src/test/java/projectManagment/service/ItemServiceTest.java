@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import projectManagement.dto.ItemDto;
+import projectManagement.dto.UpdateItemStatusDto;
+import projectManagement.dto.UpdateItemTypeDto;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.item.Item;
 import projectManagement.entities.user.User;
@@ -43,10 +45,6 @@ public class ItemServiceTest {
         // Create mock instances of ItemDto and user email
         Object itemDto = Mockito.mock(ItemDto.class);
         String userEmail = "test@example.com";
-
-        // Specify the behavior of the mock dependencies
-        when(boardRepository.findById(anyLong())).thenReturn(Optional.of(Mockito.mock(Board.class)));
-        when(userRepository.findUserByEmail(anyString())).thenReturn(Mockito.mock(User.class));
     }
 
     @Test
@@ -61,6 +59,29 @@ public class ItemServiceTest {
         // Verify that the expected exception is thrown
         assertThrows(IllegalArgumentException.class, () -> itemService.create(dto, "user@example.com"));
     }
+
+    @Test
+    void testUpdateType_whenItemDoesNotExist_shouldThrowIllegalArgumentException(){
+        // Create a test DTO
+        UpdateItemTypeDto dto = new UpdateItemTypeDto();
+        dto.setType("task");
+        // Verify that the expected exception is thrown
+        assertThrows(IllegalArgumentException.class, () -> itemService.updateType(dto));
+
+    }
+
+    @Test
+    void testUpdateStatus_whenItemDoesNotExist_shouldThrowIllegalArgumentException(){
+        // Create a test DTO
+        UpdateItemStatusDto dto = new UpdateItemStatusDto();
+        dto.setBoardId(1L);
+        dto.setStatus("Done");
+        // Verify that the expected exception is thrown
+        assertThrows(IllegalArgumentException.class, () -> itemService.updateStatus(dto));
+
+    }
+
+
 
 
 }
