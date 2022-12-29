@@ -52,7 +52,10 @@ public class ItemService {
         if (!board.getStatuses().contains(dto.getStatus())) {
             throw new IllegalArgumentException("illegal item status");
         }
-        Item item = new Item(dto.getType(), dto.getStatus(), parentItem, board, creator, assignedTo, dto.getDueDate(), dto.getImportance(), dto.getTitle(), dto.getDescription());
+        Item item=new Item.Builder()
+                .type(dto.getType()).status(dto.getStatus()).parent(parentItem).board(board).creator(creator)
+                .assignedTo(assignedTo).dueDate(dto.getDueDate()).importance(dto.getImportance())
+                .title(dto.getTitle()).description(dto.getDescription()).build();
 
         Item savedItem = itemRepository.save(item);
         if (!dto.getSubItems().isEmpty()) {

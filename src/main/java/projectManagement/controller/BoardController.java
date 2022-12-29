@@ -35,7 +35,6 @@ public class BoardController {
 
     /**
      * get status dto and add to board
-     *
      * @param dto       (StatusDto)
      * @param userEmail
      * @return Board
