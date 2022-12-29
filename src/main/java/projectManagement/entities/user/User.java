@@ -32,11 +32,9 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Board> boards;
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Notification> notifications;
-//    @Column(nullable = false)
-//    private Boolean emailNotify;
-//    @Column(nullable = false)
-//    private Boolean popNotify;
+
 
     @ElementCollection
     @CollectionTable(name = "notification_type_by_email")

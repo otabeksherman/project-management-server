@@ -8,12 +8,14 @@ import projectManagement.dto.*;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.item.Comment;
 import projectManagement.entities.item.Item;
+import projectManagement.entities.item.ItemFilter;
 import projectManagement.entities.user.User;
 import projectManagement.repository.BoardRepository;
 import projectManagement.repository.CommentRepository;
 import projectManagement.repository.ItemRepository;
 import projectManagement.repository.UserRepository;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -41,9 +43,9 @@ public class ItemService {
         Item parentItem = dto.getParentItemId() != null ?
                 itemRepository.findById(dto.getParentItemId())
                         .orElseThrow(() -> new IllegalArgumentException("parent item does not exist")) : null;
-        User assignedTo = dto.getAssignedToEmail() != null ?
+        User assignedTo = dto.getAssignedToEmail() != null && dto.getAssignedToEmail().length() > 0 ?
                 userRepository.findUserByEmail(dto.getAssignedToEmail()) : null;
-        if (dto.getAssignedToEmail() != null && assignedTo == null) {
+        if (dto.getAssignedToEmail() != null && dto.getAssignedToEmail().length() > 0 && assignedTo == null) {
             throw new IllegalArgumentException("assign to user does not exist");
         }
         if (!board.getTypes().contains(dto.getType())) {
@@ -112,9 +114,12 @@ public class ItemService {
         if (!item.getBoard().getTypes().contains(dto.getType())) {
             throw new IllegalArgumentException("illegal item type");
         }
-        User assignedTo = dto.getAssignedToId() != null ?
-                userRepository.findById(dto.getAssignedToId())
-                        .orElseThrow(() -> new IllegalArgumentException("invalid assignedTo id")) : item.getAssignedTo();
+
+        User assignedTo = dto.getAssignedToEmail() != null ?
+                userRepository.findUserByEmail(dto.getAssignedToEmail()) : null;
+        if (dto.getAssignedToEmail() != null && assignedTo == null) {
+            throw new IllegalArgumentException("Assigned to user does not exist");
+        }
         if (!dto.getSubItems().isEmpty()) {
             addSubItems(item, dto.getSubItems());
         }
@@ -196,5 +201,29 @@ public class ItemService {
     public Long getItemBoardId(Long itemId) {
         Item item = itemRepository.getReferenceById(itemId);
         return item.getBoard().getId();
+    }
+
+    public Item getById(Long itemId) {
+        return itemRepository.findById(itemId).get();
+    }
+
+    public List<Item> filter(Long boardId, ItemFilter filter, String userEmail) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("board does not exist"));
+        switch (filter) {
+            case ASSIGNED_TO_ME:
+                return itemRepository.findByBoardAndAssignedTo_Email(board, userEmail);
+            case CREATED_BY_ME:
+                return itemRepository.findByBoardAndCreator_Email(board, userEmail);
+            case OVERDUE:
+                return itemRepository.findByBoardAndDueDateBefore(board, new Date());
+            case NO_DATES:
+                return itemRepository.findByBoardAndDueDateNull(board);
+            case HIGH_IMPORTANCE:
+                return itemRepository.findByBoardAndImportance(board, 5);
+            case LOW_IMPORTANCE:
+                return itemRepository.findByBoardAndImportance(board, 1);
+            default:
+                return itemRepository.findByBoard(board);
+        }
     }
 }

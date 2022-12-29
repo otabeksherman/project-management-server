@@ -130,4 +130,15 @@ public class BoardController {
                     new BaseResponse<>(String.format("user with id %d not found", dto.getUserEmail()),null));
         }
     }
+
+    @GetMapping("{id}/get/permission")
+    public ResponseEntity<BaseResponse> getPermission(@PathVariable Long id, @RequestAttribute String userEmail) {
+        try {
+            return ResponseEntity.ok().body(new BaseResponse("Success",
+                    boardService.getPermission(id, userEmail)));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new BaseResponse(e.getMessage(), id));
+        }
+    }
 }

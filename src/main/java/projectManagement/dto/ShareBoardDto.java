@@ -18,5 +18,5 @@ public class ShareBoardDto {
     private String userEmail;
     @NotNull
     @NotEmpty
-    private UserRole role;
+    private String role;
 }
