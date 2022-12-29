@@ -21,6 +21,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import projectManagement.exception.NotificationSendFailedException;
 
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -28,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
 import java.util.Properties;
 import java.util.Set;
 
@@ -47,7 +49,7 @@ public class MailUtil {
         MailUtil.FROM_EMAIL=email;
     }
 
-    private static Gmail init() throws Exception {
+    private static Gmail init() throws GeneralSecurityException, IOException {
         NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
         Gmail service = new Gmail.Builder(httpTransport, jsonFactory, getCredentials(httpTransport, jsonFactory))
@@ -72,7 +74,7 @@ public class MailUtil {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
-    public static void sendMail(String emailAddress, String subject, String message) throws Exception {
+    public static void sendMail(String emailAddress, String subject, String message) throws MessagingException, IOException, GeneralSecurityException, NotificationSendFailedException {
         Gmail service = init();
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);

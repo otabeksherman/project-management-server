@@ -15,4 +15,7 @@ public class AddCommentDto {
     @NotNull
     @NotEmpty
     private String comment;
+    @NotNull
+    @NotEmpty
+    private Long boardId;
 }

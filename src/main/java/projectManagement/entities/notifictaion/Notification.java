@@ -28,6 +28,7 @@ public class Notification {
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "assigner_id", nullable = false)
+//    @JsonIgnore
     private User assigner;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)

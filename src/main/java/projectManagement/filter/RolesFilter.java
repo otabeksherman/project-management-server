@@ -101,15 +101,21 @@ public class RolesFilter extends OncePerRequestFilter {
             request.setAttribute("dto", dto);
             return operation;
         }
-        if (path.endsWith("/item/update/type")) {
+        if (path.endsWith("/item/type/update")) {
+            operation = Operation.UPDATE_ITEM;
+            UpdateItemTypeDto dto = gson.fromJson(String.valueOf(jsonObject), UpdateItemTypeDto.class);
+            request.setAttribute("dto", dto);
+            return operation;
+        }
+        if (path.endsWith("/item/update")) {
             operation = Operation.UPDATE_ITEM_TYPE;
             UpdateItemDto dto = gson.fromJson(String.valueOf(jsonObject), UpdateItemDto.class);
             request.setAttribute("dto", dto);
             return operation;
         }
-        if (path.endsWith("/item/update/status")) {
+        if (path.endsWith("/item/status/update")) {
             operation = Operation.UPDATE_ITEM_STATUS;
-            UpdateItemTypeDto dto = gson.fromJson(String.valueOf(jsonObject), UpdateItemTypeDto.class);
+            UpdateItemStatusDto dto = gson.fromJson(String.valueOf(jsonObject), UpdateItemStatusDto.class);
             request.setAttribute("dto", dto);
             return operation;
         }
@@ -123,7 +129,7 @@ public class RolesFilter extends OncePerRequestFilter {
         //Board operations:
         if (path.endsWith("/board/status/add")) {
             operation = Operation.ADD_STATUS;
-            AddCommentDto dto = gson.fromJson(String.valueOf(jsonObject), AddCommentDto.class);
+            StatusDto dto = gson.fromJson(String.valueOf(jsonObject), StatusDto.class);
             request.setAttribute("dto", dto);
             return operation;
         }
@@ -139,7 +145,7 @@ public class RolesFilter extends OncePerRequestFilter {
             request.setAttribute("dto", dto);
             return operation;
         }
-        if (path.endsWith("/board/status/share")) {
+        if (path.endsWith("/board/share")) {
             operation = Operation.SHARE_BOARD;
             ShareBoardDto dto = gson.fromJson(String.valueOf(jsonObject), ShareBoardDto.class);
             request.setAttribute("dto", dto);

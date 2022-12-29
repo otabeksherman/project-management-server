@@ -11,4 +11,7 @@ public class DeleteItemDto {
     @NotNull
     @NotEmpty
     private Long itemId;
+    @NotNull
+    @NotEmpty
+    private Long boardId;
 }

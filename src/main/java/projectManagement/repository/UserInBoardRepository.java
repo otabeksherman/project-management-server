@@ -14,4 +14,6 @@ public interface UserInBoardRepository extends JpaRepository<UserInBoard, Long> 
 
     List<UserInBoard> findByBoard_Id(Long id);
 
+    List<UserInBoard> findByUser_Email(String email);
+
 }

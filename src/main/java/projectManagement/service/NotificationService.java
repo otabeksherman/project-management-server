@@ -12,6 +12,9 @@ import projectManagement.exception.NotificationSendFailedException;
 import projectManagement.exception.UserNotFoundException;
 import projectManagement.repository.UserRepository;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 
 import static projectManagement.util.MailUtil.sendMail;
@@ -84,7 +87,13 @@ public class NotificationService {
         String message = "notification from user: " + emailAssigner +
                 "notification: " + notification.getNotificationType().getText();
         try {
-            sendMail(user.getEmail(), subject, message);
+           new Thread(()-> {
+               try {
+                   sendMail(user.getEmail(), subject, message);
+               } catch (MessagingException | IOException | GeneralSecurityException | NotificationSendFailedException e) {
+                  logger.error("failed to send email");
+               }
+           }) .start();
         } catch (Exception e) {
             throw new NotificationSendFailedException("Unable to send mail");
         }
