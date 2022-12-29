@@ -9,6 +9,7 @@ import projectManagement.entities.board.Board;
 import projectManagement.entities.user.User;
 import projectManagement.entities.user.UserInBoard;
 import projectManagement.entities.user.UserRole;
+import projectManagement.exception.BoardNotFoundException;
 import projectManagement.exception.UserNotFoundException;
 import projectManagement.repository.BoardRepository;
 import projectManagement.repository.UserInBoardRepository;
@@ -42,8 +43,8 @@ public class UserInBoardService {
      * @return the UserInBoard entity that was created
      * @throws UserNotFoundException if the email specified in the dto object is not found in the users table
      */
-    public UserInBoard share(ShareBoardDto dto) throws UserNotFoundException {
-        Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("board does not exist"));
+    public UserInBoard share(ShareBoardDto dto) throws UserNotFoundException, BoardNotFoundException {
+        Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new BoardNotFoundException("board does not exist"));
         User user = userRepository.findUserByEmail(dto.getUserEmail());
         if (user == null) {
             throw new UserNotFoundException(String.format("Email %s is not exists in users table", dto.getUserEmail()));

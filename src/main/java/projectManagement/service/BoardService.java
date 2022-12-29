@@ -7,9 +7,12 @@ import org.springframework.stereotype.Service;
 import projectManagement.dto.AddTypeDto;
 import projectManagement.dto.StatusDto;
 import projectManagement.entities.board.Board;
+import projectManagement.entities.item.Item;
 import projectManagement.entities.user.User;
 import projectManagement.entities.user.UserInBoard;
 import projectManagement.entities.user.UserRole;
+import projectManagement.exception.BoardNotFoundException;
+import projectManagement.exception.UserNotFoundException;
 import projectManagement.repository.BoardRepository;
 import projectManagement.repository.UserInBoardRepository;
 import projectManagement.repository.UserRepository;
@@ -55,8 +58,11 @@ public class BoardService {
      * @param userEmail The email of the user who will be the owner of the new board
      * @return The newly created board
      */
-    public Board create(String name, String userEmail) {
+    public Board create(String name, String userEmail) throws UserNotFoundException {
         User user = userRepository.findUserByEmail(userEmail);
+        if(user==null){
+            throw new UserNotFoundException(String.format("Email %s is not exists in users table", userEmail));
+        }
         Board board = new Board(name, user);
         UserInBoard userInBoard = new UserInBoard(board, user, UserRole.ADMIN);
         return userInBoardRepository.save(userInBoard).getBoard();
@@ -68,8 +74,8 @@ public class BoardService {
      * @param dto An object containing the ID of the board and the name of the new status
      * @return The updated board
      */
-    public Board addStatus(StatusDto dto) {
-        Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("board does not exist"));
+    public Board addStatus(StatusDto dto) throws BoardNotFoundException {
+        Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new BoardNotFoundException("board does not exist"));
         board.addStatus(dto.getName());
         return boardRepository.save(board);
     }
@@ -80,8 +86,8 @@ public class BoardService {
      * @param dto An object containing the ID of the board and the name of the new type
      * @return The updated board
      */
-    public Board addType(AddTypeDto dto) {
-        Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("board does not exist"));
+    public Board addType(AddTypeDto dto) throws BoardNotFoundException {
+        Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new BoardNotFoundException("board does not exist"));
         board.addType(dto.getName());
         return boardRepository.save(board);
     }
@@ -92,13 +98,15 @@ public class BoardService {
      * @param dto An object containing the ID of the board and the name of the status to be removed
      * @return The updated board
      */
-    public Board deleteStatus(StatusDto dto) {
-        Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new IllegalArgumentException("board does not exist"));
+    public Board deleteStatus(StatusDto dto) throws BoardNotFoundException {
+        Board board = boardRepository.findById(dto.getBoardId()).orElseThrow(() -> new BoardNotFoundException("board does not exist"));
         board.removeStatus(dto.getName());
         return boardRepository.save(board);
     }
 
-    public UserRole getPermission(Long boardId, String userEmail) {
+    public UserRole getPermission(Long boardId, String userEmail) throws BoardNotFoundException {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardNotFoundException("board does not exist"));
+
         UserInBoard userInBoard = userInBoardRepository.findByBoardAndUser(boardId, userEmail);
         if (userInBoard == null) {
             throw new IllegalArgumentException("user does not have permission to the board");
