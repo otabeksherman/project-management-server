@@ -101,7 +101,7 @@ public class RolesFilter extends OncePerRequestFilter {
             request.setAttribute("dto", dto);
             return operation;
         }
-        if (path.endsWith("/item/update/type")) {
+        if (path.endsWith("/item/type/update")) {
             operation = Operation.UPDATE_ITEM;
             UpdateItemTypeDto dto = gson.fromJson(String.valueOf(jsonObject), UpdateItemTypeDto.class);
             request.setAttribute("dto", dto);
@@ -113,7 +113,7 @@ public class RolesFilter extends OncePerRequestFilter {
             request.setAttribute("dto", dto);
             return operation;
         }
-        if (path.endsWith("/item/update/status")) {
+        if (path.endsWith("/item/status/update")) {
             operation = Operation.UPDATE_ITEM_STATUS;
             UpdateItemStatusDto dto = gson.fromJson(String.valueOf(jsonObject), UpdateItemStatusDto.class);
             request.setAttribute("dto", dto);
