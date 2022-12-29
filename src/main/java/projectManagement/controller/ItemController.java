@@ -9,20 +9,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import projectManagement.dto.*;
 import projectManagement.entities.item.Item;
-import projectManagement.entities.item.Item;
 import projectManagement.entities.item.ItemFilter;
 import projectManagement.entities.notifictaion.NotificationType;
-import projectManagement.entities.user.User;
+import projectManagement.exception.NotificationSendFailedException;
+import projectManagement.exception.UserNotFoundException;
 import projectManagement.service.ItemService;
 import projectManagement.service.NotificationService;
 import projectManagement.service.UserInBoardService;
-
-import javax.mail.MessagingException;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.sql.SQLDataException;
-import java.util.List;
-
 
 import java.util.List;
 
@@ -81,7 +74,7 @@ public class ItemController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new BaseResponse<>("item deleted successfully",
                             dto.getItemId()));
-        } catch (Exception e) {
+        } catch (UserNotFoundException | NotificationSendFailedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), null));
         }
@@ -111,10 +104,12 @@ public class ItemController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Item updated successfully",
                             updatedItem));
-        } catch (Exception e) {
+        } catch (UserNotFoundException | NotificationSendFailedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), null));
+
         }
+
     }
 
     /**
@@ -122,8 +117,7 @@ public class ItemController {
      * It returns Item.
      *
      * @param dto
-     * @param userEmail
-     * return item
+     * @param userEmail return item
      */
     @PatchMapping("/type/update")
     public ResponseEntity<BaseResponse<Item>> updateType(@RequestAttribute UpdateItemTypeDto dto, @RequestAttribute String userEmail) {
@@ -159,7 +153,7 @@ public class ItemController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Item status updated successfully",
                             updatedItem));
-        } catch (Exception e) {
+        } catch (UserNotFoundException |NotificationSendFailedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), null));
         }
@@ -170,8 +164,7 @@ public class ItemController {
      * It returns Item
      *
      * @param dto
-     * @param userEmail
-     * return Item
+     * @param userEmail return Item
      */
 
     @PatchMapping("/comment/add")
@@ -187,7 +180,7 @@ public class ItemController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Comment added successfully",
                             updatedItem));
-        } catch (Exception e) {
+        } catch (UserNotFoundException |NotificationSendFailedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>(e.getMessage(), null));
         }
