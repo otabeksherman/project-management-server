@@ -9,9 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import projectManagement.dto.BaseResponse;
 import projectManagement.dto.RegistrationDto;
+import projectManagement.exception.NotificationSendFailedException;
+import projectManagement.exception.UserNotFoundException;
 import projectManagement.service.UserService;
-
-import java.sql.SQLDataException;
 
 @Controller
 @CrossOrigin
@@ -24,6 +24,7 @@ public class UserController {
 
     /**
      * registration of a new user. It returns a ResponseEntity object with a BaseResponse body.
+     *
      * @param dto
      * @return user email
      */
@@ -34,7 +35,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new BaseResponse<>("Account created successfully",
                             userService.register(dto).getEmail()));
-        } catch (SQLDataException e) {
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>("Email already exists", dto.getEmail()));
         }
@@ -52,24 +53,25 @@ public class UserController {
         logger.info("in notifyByEmail(): ");
         try {
             return ResponseEntity.ok(new BaseResponse<>("notify by " + type + " updated", userService.updateNotifyBy(userEmail, notify, type).getEmail()));
-        } catch (SQLDataException e) {
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", userEmail));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("type %s is not exist", type));
-        } catch (Exception e) {
+        } catch (NotificationSendFailedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Unable to send mail", userEmail));
         }
     }
 
     /**
      * ger user email and return it's notification list
+     *
      * @return user notification list
      */
     @GetMapping("/userNotification")
     public ResponseEntity<BaseResponse> getUserNotification(@RequestAttribute String userEmail) {
         try {
             return ResponseEntity.ok(new BaseResponse<>("User notification list", userService.getUserNotification(userEmail)));
-        } catch (SQLDataException e) {
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
         }
     }
@@ -86,7 +88,7 @@ public class UserController {
     public ResponseEntity<BaseResponse> updateNotificationTypeSettings(@RequestAttribute String userEmail, @RequestParam String notificationType, @RequestParam Boolean update) {
         try {
             return ResponseEntity.ok(new BaseResponse<>("updateNotificationTypeSettings", userService.updateNotificationTypeSettings(userEmail, notificationType, update)));
-        } catch (SQLDataException e) {
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("notification type %s is not exists", notificationType));
@@ -95,6 +97,7 @@ public class UserController {
 
     /**
      * get user notification type setting (map of type and boolean)
+     *
      * @param userEmail
      * @return map<type, boolean>
      */
@@ -102,13 +105,14 @@ public class UserController {
     public ResponseEntity<BaseResponse> getUserNotificationTypeNotification(@RequestAttribute String userEmail) {
         try {
             return ResponseEntity.ok(new BaseResponse<>("User notification type:", userService.getUserNotificationTypeNotification(userEmail)));
-        } catch (SQLDataException e) {
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
         }
     }
 
     /**
      * return notification by setting (is email and popup are active)
+     *
      * @param userEmail
      * @return map <string (email/popup), boolean>
      */
@@ -116,7 +120,7 @@ public class UserController {
     public ResponseEntity<BaseResponse> getUserNotificationBySettings(@RequestAttribute String userEmail) {
         try {
             return ResponseEntity.ok(new BaseResponse<>("User notification by settings:", userService.getUserNotificationBySettings(userEmail)));
-        } catch (SQLDataException e) {
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
         }
     }

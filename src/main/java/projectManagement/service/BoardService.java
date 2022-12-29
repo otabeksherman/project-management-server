@@ -12,6 +12,7 @@ import projectManagement.entities.item.Item;
 import projectManagement.entities.user.User;
 import projectManagement.entities.user.UserInBoard;
 import projectManagement.entities.user.UserRole;
+import projectManagement.exception.BoardNotFoundException;
 import projectManagement.repository.BoardRepository;
 import projectManagement.repository.ItemRepository;
 import projectManagement.repository.UserInBoardRepository;
@@ -19,6 +20,7 @@ import projectManagement.repository.UserRepository;
 
 import java.sql.SQLDataException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,8 +50,8 @@ public class BoardService {
  * @param id The ID of the board
  * @return The board with the given ID
  */
-    public Board getBoard(String email, Long id) throws SQLDataException {
-        return boardRepository.findById(id).orElseThrow(SQLDataException::new);
+    public Board getBoard(String email, Long id) throws BoardNotFoundException {
+        return boardRepository.findById(id).orElseThrow(BoardNotFoundException::new);
     }
     /**
      * This method creates a new board with the given name and assigns the user with the given email as the owner.
