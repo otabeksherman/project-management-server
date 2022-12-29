@@ -20,26 +20,9 @@ public class UserTest {
         assertFalse(user.isGithubAccount());
         assertEquals("test@example.com", user.getEmail());
         assertEquals("Aa123456!", user.getPassword());
-        assertTrue(user.getEmailNotify());
-        assertTrue(user.getPopNotify());
+
         assertNotNull(user.getBoards());
         assertNotNull(user.getNotifications());
     }
 
-    @Test
-    void testUpdateNotificationTypeSetting() {
-        user.updateNotificationTypeSetting(NotificationType.DELETED, false);
-        assertFalse(user.getNotificationTypeSettings().get(NotificationType.DELETED));
-    }
-
-//    @Test
-//    void testAddNotifications() {
-//        User userAssigner = new User("test2@example.com", "Bb123456!");
-//        Board board=new Board("board1",userAssigner);
-//        Notification notification = new Notification.Builder()
-//                .user(user).assigner(userAssigner).board(board).date(LocalDate.now())
-//                .notificationType(NotificationType.ASSIGN_TO_ME).build();
-//        user.addNotifications(notification);
-//        assertTrue(user.getNotifications().contains(notification));
-//    }
 }

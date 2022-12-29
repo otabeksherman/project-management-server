@@ -12,7 +12,6 @@ import projectManagement.dto.RegistrationDto;
 import projectManagement.entities.notifictaion.Notification;
 import projectManagement.entities.notifictaion.NotificationType;
 import projectManagement.entities.user.User;
-import projectManagement.exception.NotificationSendFailedException;
 import projectManagement.exception.UserNotFoundException;
 import projectManagement.service.UserService;
 
@@ -46,27 +45,6 @@ public class UserController {
                     .body(new BaseResponse<>("Email already exists", dto.getEmail()));
         }
     }
-
-//    /**
-//     * get boolean notify, change to active/ unactive notifyBy Email/Popup user's setting.
-//     * if notify is true- also send first notify email.
-//     *
-//     * @param notify
-//     * @return BaseResponse with user's email.
-//     */
-//    @PatchMapping("/updateNotifyBy")
-//    public ResponseEntity<BaseResponse<String>> updateNotifyBy(@RequestParam boolean notify, @RequestParam String type, @RequestAttribute String userEmail) {
-//        logger.info("in notifyByEmail(): ");
-//        try {
-//            return ResponseEntity.ok(new BaseResponse<>("notify by " + type + " updated", userService.updateNotifyBy(userEmail, notify, type).getEmail()));
-//        } catch (UserNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", userEmail));
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("type %s is not exist", type));
-//        } catch (NotificationSendFailedException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Unable to send mail", userEmail));
-//        }
-//    }
 
     /**
      * ger user email and return it's notification list
@@ -109,7 +87,7 @@ public class UserController {
      * @param update
      * @return User
      */
-    @PatchMapping("/updateNotificationType")
+    @PatchMapping("/updatePopupNotificationType")
     public ResponseEntity<BaseResponse<User>> updatePopupNotificationTypeSettings(@RequestAttribute String userEmail, @RequestParam String notificationType, @RequestParam Boolean update) {
         try {
             return ResponseEntity.ok(new BaseResponse<>("updateNotificationTypeSettings", userService.updatePopupNotificationTypeSettings(userEmail, notificationType, update)));
@@ -149,19 +127,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
         }
     }
-
-//    /**
-//     * return notification by setting (is email and popup are active)
-//     *
-//     * @param userEmail
-//     * @return map <string (email/popup), boolean>
-//     */
-//    @GetMapping("/getUserNotificationBySettings")
-//    public ResponseEntity<BaseResponse<Map<String, Boolean>>> getUserNotificationBySettings(@RequestAttribute String userEmail) {
-//        try {
-//            return ResponseEntity.ok(new BaseResponse<>("User notification by settings:", userService.getUserNotificationBySettings(userEmail)));
-//        } catch (UserNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>("Email %s is not exists in users table", null));
-//        }
-//    }
 }

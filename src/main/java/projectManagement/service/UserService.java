@@ -12,16 +12,12 @@ import projectManagement.dto.RegistrationDto;
 import projectManagement.entities.notifictaion.Notification;
 import projectManagement.entities.notifictaion.NotificationType;
 import projectManagement.entities.user.User;
-import projectManagement.exception.NotificationSendFailedException;
 import projectManagement.exception.UserNotFoundException;
 import projectManagement.repository.UserRepository;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import static projectManagement.util.MailUtil.sendMail;
 
 @Service
 @RequiredArgsConstructor
@@ -92,64 +88,6 @@ public class UserService implements UserDetailsService {
         return (userRepository.findUserByEmail(email) != null);
     }
 
-//    /**
-//     * Updates the notification settings for a given user.
-//     *
-//     * @param email  the email of the user to update
-//     * @param notify whether notifications should be enabled or disabled
-//     * @param type   the type of notification to update (either "popup" or "email")
-//     * @return the updated user
-//     * @throws UserNotFoundException           if the user with the given email does not exist
-//     * @throws NotificationSendFailedException if the given notification type is invalid
-//     */
-//    public User updateNotifyBy(String email, boolean notify, String type) throws UserNotFoundException, NotificationSendFailedException {
-//        User user;
-//        if (userRepository.findUserByEmail(email) == null) {
-//            throw new UserNotFoundException(String.format("Email %s is not exists in users table", email));
-//        } else {
-//            user = userRepository.findUserByEmail(email);
-//            if (type.equals("popup")) {
-//                user.setPopNotify(notify);
-//            } else if (type.equals("email")) {
-//                user.setEmailNotify(notify);
-//
-//                //send first email about update state to active
-//                if (notify == true) {
-//                    String subject = "email notification";
-//                    String message = "Email notifications have been updated to active. From now on you will start receiving updates by email";
-//                    try {
-//                        sendMail(email, subject, message);
-//                    } catch (Exception e) {
-//                        throw new NotificationSendFailedException(String.format("failed to send email: ", email));
-//                    }
-//                }
-//            } else {
-//                throw new IllegalArgumentException(String.format("type %s is not exist", type));
-//            }
-//        }
-//        return userRepository.save(user);
-//    }
-
-//    /**
-//     * Registers a new user with the given email address and sets their notification preferences for
-//     * popup notifications to the given value.
-//     *
-//     * @param email  the email address of the user to be registered
-//     * @param notify whether the user wants to receive popup notifications
-//     * @return the updated user object
-//     * @throws UserNotFoundException if the given email does not exist in the users table
-//     */
-//    public User notifyByPopup(String email, boolean notify) throws UserNotFoundException {
-//        User user;
-//        if (userRepository.findUserByEmail(email) == null) {
-//            throw new UserNotFoundException(String.format("Email %s is not exists in users table", email));
-//        } else {
-//            user = userRepository.findUserByEmail(email);
-//            user.setPopNotify(notify);
-//        }
-//        return userRepository.save(user);
-//    }
-
     /**
      * Retrieves the set of notifications for the user with the given email address.
      *
@@ -197,27 +135,6 @@ public class UserService implements UserDetailsService {
             return user.getNotificationTypeSettingsPopup();
         }
     }
-
-//    /**
-//     * Retrieves the notification preferences for the user with the given email address for each type
-//     * of notification.
-//     *
-//     * @param email the email address of the user
-//     * @return a map of notification types to boolean values indicating whether the user wants to receive
-//     * notifications of that type
-//     * @throws UserNotFoundException if the given email does not exist in the users table
-//     */
-//    public Map<String, Boolean> getUserNotificationBySettings(String email) throws UserNotFoundException {
-//        if (userRepository.findUserByEmail(email) == null) {
-//            throw new UserNotFoundException(String.format("Email %s is not exists in users table", email));
-//        } else {
-//            User user = userRepository.findUserByEmail(email);
-//            Map<String, Boolean> notificationBySettings = new HashMap<>();
-//            notificationBySettings.put("email", user.getEmailNotify());
-//            notificationBySettings.put("popup", user.getPopNotify());
-//            return notificationBySettings;
-//        }
-//    }
 
     /**
      * Updates the notification settings for the specified notification type for the user with the given email.
