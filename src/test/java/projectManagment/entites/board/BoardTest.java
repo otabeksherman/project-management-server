@@ -1,4 +1,4 @@
-package projectManagment.controller.entites.board;
+package projectManagment.entites.board;
 
 import projectManagement.entities.board.Board;
 import projectManagement.entities.item.Item;

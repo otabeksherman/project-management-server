@@ -1,4 +1,4 @@
-package projectManagment.controller.entites.notification;
+package projectManagment.entites.notification;
 
 import org.junit.jupiter.api.Test;
 import projectManagement.entities.board.Board;
