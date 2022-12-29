@@ -21,6 +21,10 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "boards")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
