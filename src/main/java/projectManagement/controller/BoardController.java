@@ -11,6 +11,7 @@ import projectManagement.dto.ShareBoardDto;
 import projectManagement.dto.StatusDto;
 import projectManagement.entities.board.Board;
 import projectManagement.entities.user.UserInBoard;
+import projectManagement.exception.BoardNotFoundException;
 import projectManagement.exception.UserNotFoundException;
 import projectManagement.service.BoardService;
 import projectManagement.service.UserInBoardService;
@@ -29,8 +30,13 @@ public class BoardController {
 
     @PostMapping("create")
     public ResponseEntity<BaseResponse<Board>> create(@RequestBody String name, @RequestAttribute String userEmail) {
-        return ResponseEntity.ok().body(new BaseResponse<>("Board created successfully",
-                boardService.create(name, userEmail)));
+        try {
+            return ResponseEntity.ok().body(new BaseResponse<>("Board created successfully",
+                    boardService.create(name, userEmail)));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new BaseResponse<>(String.format("Email %s exists in users table", userEmail), null));
+        }
     }
 
     /**
@@ -41,8 +47,13 @@ public class BoardController {
      */
     @PatchMapping("status/add")
     public ResponseEntity<BaseResponse<Board>> addStatus(@RequestAttribute StatusDto dto, @RequestAttribute String userEmail) {
-        return ResponseEntity.ok().body(new BaseResponse<>("Status added successfully",
-                boardService.addStatus(dto)));
+        try {
+            return ResponseEntity.ok().body(new BaseResponse<>("Status added successfully",
+                    boardService.addStatus(dto)));
+        } catch (BoardNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new BaseResponse<>(String.format("board with id %s is not exists in boards table", (dto.getBoardId())), null));
+        }
     }
 
     /**
@@ -54,8 +65,13 @@ public class BoardController {
      */
     @PatchMapping("type/add")
     public ResponseEntity<BaseResponse<Board>> addType(@RequestAttribute AddTypeDto dto, @RequestAttribute String userEmail) {
-        return ResponseEntity.ok().body(new BaseResponse<>("Type added successfully",
-                boardService.addType(dto)));
+        try {
+            return ResponseEntity.ok().body(new BaseResponse<>("Type added successfully",
+                    boardService.addType(dto)));
+        } catch (BoardNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new BaseResponse<>(String.format("board with id %s is not exists in boards table", (dto.getBoardId())), null));
+        }
     }
 
     /**
@@ -67,8 +83,13 @@ public class BoardController {
      */
     @PatchMapping("status/delete")
     public ResponseEntity<BaseResponse<Board>> deleteStatus(@RequestAttribute StatusDto dto, @RequestAttribute String userEmail) {
-        return ResponseEntity.ok().body(new BaseResponse<>("Type added successfully",
-                boardService.deleteStatus(dto)));
+        try {
+            return ResponseEntity.ok().body(new BaseResponse<>("Type added successfully",
+                    boardService.deleteStatus(dto)));
+        } catch (BoardNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new BaseResponse<>(String.format("board with id %s is not exists in boards table", (dto.getBoardId())), null));
+        }
     }
 
     /**
@@ -128,6 +149,9 @@ public class BoardController {
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new BaseResponse<>(String.format("user with id %d not found", dto.getUserEmail()),null));
+        } catch (BoardNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new BaseResponse<>(String.format("Board with id %d not found", dto.getBoardId()), null));
         }
     }
 
@@ -139,6 +163,9 @@ public class BoardController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                     new BaseResponse(e.getMessage(), id));
+        } catch (BoardNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new BaseResponse<>(String.format("Board with id %d not found", id), null));
         }
     }
 }
